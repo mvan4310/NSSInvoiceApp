@@ -1,0 +1,68 @@
+﻿@page "/settings"
+
+@inject DataService dataService;
+@inject ISnackbar Snackbar
+@inject NavigationManager navigationManager
+@inject IDialogService dialogService
+@using System.Text.Json
+
+<MudLayout>
+    <MudList Clickable="true">
+        <MudSwitch Checked="@dataService.Instance.EnableDarkMode" Label="Enable Dark Mode" Color="Color.Primary" T="bool" CheckedChanged="@DarkModeChanged" />
+        <MudDivider />
+        <MudListItem Text="Export Saved Data" Disabled="true" Icon="@Icons.Material.Filled.Share" OnClick="OnExport" />
+    </MudList>
+</MudLayout>
+
+@code {
+
+
+
+    private void DarkModeChanged(bool value)
+    {
+        dataService.Instance.LastUpdated = DateTime.Now.ToString();
+        dataService.Instance.EnableDarkMode = value;
+        dataService.SaveData();
+        StateHasChanged();
+
+        //We do this twice so we can get the new theme to show without the user having to do something. Maybe I can find a better way later, but this works
+        dataService.ToggleSidebar.Invoke();
+        dataService.ToggleSidebar.Invoke();
+    }
+
+    private void SleepModeChanged(bool value)
+    {
+        dataService.Instance.LastUpdated = DateTime.Now.ToString();
+        //dataService.Instance.EnableSleepDetection = value;
+        dataService.SaveData();
+    }
+
+    private void GoogleFitModeChanged(bool value)
+    {
+        dataService.Instance.LastUpdated = DateTime.Now.ToString();
+        //dataService.Instance.EnableGoogleFitIntegration = value;
+        dataService.SaveData();
+    }
+
+    private void StepModeChanged(bool value)
+    {
+        dataService.Instance.LastUpdated = DateTime.Now.ToString();
+        //dataService.Instance.EnableStepCounter = value;
+        dataService.SaveData();
+
+        if (value)
+        {
+            //MainActivity.MainActivityInstance.ManualStartStepService();
+        }
+        else
+        {
+            //MainActivity.MainActivityInstance.StopStepService();
+        }
+        
+    }
+
+    private void OnExport()
+    {
+        Snackbar.Add("Unable to export data at this time.");
+    }
+}

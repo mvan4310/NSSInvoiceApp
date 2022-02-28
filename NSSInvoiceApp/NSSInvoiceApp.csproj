@@ -68,10 +68,4 @@
 	  <PackageReference Include="Syncfusion.XlsIO.NET" Version="19.4.0.53" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Pages\Invoices\" />
-	  <Folder Include="Pages\Expenses\" />
-	  <Folder Include="Pages\Customers\" />
-	</ItemGroup>
-
 </Project>
