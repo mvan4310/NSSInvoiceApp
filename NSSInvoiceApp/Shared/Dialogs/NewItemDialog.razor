@@ -1,0 +1,42 @@
+﻿@inject NavigationManager navigationManager
+
+<MudDialog>
+    <DialogContent>
+        <div class="d-flex flex-column py-1">
+            <MudButton OnClick="ChangeTitle">Add Invoice</MudButton>
+            <MudButton OnClick="ToggleCloseButton">Add Expense</MudButton>
+            <MudButton OnClick="ToggleFullWidth">Add Customer</MudButton>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Close">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    void ChangeTitle()
+    {
+        navigationManager.NavigateTo("/addfood");
+    }
+
+    void ToggleCloseButton()
+    {
+        MudDialog.Options.CloseButton = !(MudDialog.Options.CloseButton ?? false);
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+
+    void ToggleFullWidth()
+    {
+        MudDialog.Options.FullWidth = !(MudDialog.Options.FullWidth ?? true);
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+
+    void ToggleHeader()
+    {
+        MudDialog.Options.NoHeader = !(MudDialog.Options.NoHeader ?? false);
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+}
