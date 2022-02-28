@@ -10,7 +10,7 @@
     <MudList Clickable="true">
         <MudSwitch Checked="@dataService.Instance.EnableDarkMode" Label="Enable Dark Mode" Color="Color.Primary" T="bool" CheckedChanged="@DarkModeChanged" />
         <MudDivider />
-        <MudListItem Text="Export Saved Data" Disabled="true" Icon="@Icons.Material.Filled.Share" OnClick="OnExport" />
+        <MudListItem Text="Export Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Share" OnClick="OnExport" />
     </MudList>
 </MudLayout>
 
@@ -30,39 +30,31 @@
         dataService.ToggleSidebar.Invoke();
     }
 
-    private void SleepModeChanged(bool value)
-    {
-        dataService.Instance.LastUpdated = DateTime.Now.ToString();
-        //dataService.Instance.EnableSleepDetection = value;
-        dataService.SaveData();
-    }
-
-    private void GoogleFitModeChanged(bool value)
-    {
-        dataService.Instance.LastUpdated = DateTime.Now.ToString();
-        //dataService.Instance.EnableGoogleFitIntegration = value;
-        dataService.SaveData();
-    }
-
-    private void StepModeChanged(bool value)
-    {
-        dataService.Instance.LastUpdated = DateTime.Now.ToString();
-        //dataService.Instance.EnableStepCounter = value;
-        dataService.SaveData();
-
-        if (value)
-        {
-            //MainActivity.MainActivityInstance.ManualStartStepService();
-        }
-        else
-        {
-            //MainActivity.MainActivityInstance.StopStepService();
-        }
-        
-    }
-
     private void OnExport()
     {
-        Snackbar.Add("Unable to export data at this time.");
+        string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+        string savePath = Path.Combine(rootPath, "data.json");
+        try
+        {
+            var _data = JsonSerializer.Serialize(dataService.Instance);
+            File.CreateText(savePath).Dispose();
+            using (TextWriter writer = new StreamWriter(savePath, false))
+            {
+                    writer.WriteLine(_data);
+                    writer.Close();
+            }
+            Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                Snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
     }
 }

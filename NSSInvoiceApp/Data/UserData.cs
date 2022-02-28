@@ -9,6 +9,7 @@ namespace NSSInvoiceApp.Data
     public class UserData
     {
         public List<Invoice> Invoices { get; set; } = new();
+        public List<InvoiceItem> InvoiceItems { get; set; } = new();
         public List<Expense> Expenses { get; set; } = new();
         public List<Customer> Customers { get; set; } = new();
         public string LastUpdated { get; set; } = DateTime.MinValue.ToString();

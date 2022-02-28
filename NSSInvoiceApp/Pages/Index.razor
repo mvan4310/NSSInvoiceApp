@@ -1,7 +1,137 @@
 ﻿@page "/"
+@inject DataService dataService;
+@inject ISnackbar snackbar
 
-<h1>Hello, world!</h1>
+@if (IsLoading)
+{
+    <div class="inner-center">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </div>
+}
+else
+{
+   <MudChart ChartType="ChartType.Donut" ChartSeries="@Series" @bind-SelectedIndex="selectedIndex" InputLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="@options"></MudChart> 
+   <br/>
+   <MudPaper >
+    <MudDataGrid MultiSelection="true" Items="@invoices" Sortable="true" Filterable="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Latest Invoices</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <Column T="Invoice" Field="Date" />
+            <Column T="Invoice" Field="Customer" />
+            <Column T="Invoice" Field="TotalAmount" />
+            <Column T="Invoice" Field="DateReceived" CellStyleFunc="@_cellStyleFunc" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Invoice" />
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
 
-Welcome to your new app.
+<br/>
+   <MudPaper >
+    <MudDataGrid MultiSelection="true" Items="@expenses" Sortable="true" Filterable="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Latest Expenses</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <Column T="Expense" Field="Date" />
+            <Column T="Expense" Field="Name" />
+            <Column T="Expense" Field="TotalAmount" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Expense" />
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    //Ideally, we should add a chart at the top, with two list below. One for invoices, another for expenses
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    public int selectedIndex = -1;
+    public string[] XAxisLabels = {"Invoices", "Expenses" };
+    private ChartOptions options = new ChartOptions();
+    private bool IsLoading = true;
+    private List<Invoice> invoices = new List<Invoice>();
+    private List<Expense> expenses = new List<Expense>();
+    private string _searchString;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        options.InterpolationOption = InterpolationOption.NaturalSpline;
+        options.YAxisFormat = "c2";
+
+        dataService.Title = "Home";
+
+        try
+        {
+            await Task.Run(() => LoadPageDetails().ConfigureAwait(false));
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    async Task LoadPageDetails()
+    {
+        if (IsLoading)
+        {
+            IsLoading = true;
+            var _data = dataService.Instance.Invoices.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).ToArray();
+            var _expenses = dataService.Instance.Expenses.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).ToArray();
+            expenses = dataService.Instance.Expenses.Where(a => a.Date > DateTime.Now.AddDays(-30)).ToList();
+            invoices = dataService.Instance.Invoices.Where(a => a.Date > DateTime.Now.AddDays(-30)).ToList();
+
+            ChartSeries _inv = new ChartSeries()
+            {
+                Data = _data,
+                Name = "Invoices"
+            };
+
+            ChartSeries _exp = new ChartSeries()
+            {
+                Data = _expenses,
+                Name = "Expenses"
+            };
+
+            Series.Add(_inv);
+            Series.Add(_exp);
+
+            await InvokeAsync(StateHasChanged);
+
+
+            IsLoading = false;
+        }
+
+    }
+
+    private Func<Invoice, string> _cellStyleFunc => x =>
+    {
+        string style = "";
+
+        if (x.ReceivedPayment)
+            style += "background-color:#1B5E20";
+
+        else
+            style += "background-color:#BF360C";
+
+        return style;
+    };
+}

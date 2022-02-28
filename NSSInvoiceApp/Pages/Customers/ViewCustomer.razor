@@ -1,5 +1,44 @@
-﻿<h3>ViewCustomer</h3>
+﻿@page "/customers/view/{ID:int}"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+<header>
+    <div class="container-fluid p-3 text-center page-header">
+        <h1>View Customer</h1>
+    </div>
+</header>
+<br />
+
+<MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudField Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Name</MudField>
+                    <MudField Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Address</MudField>
+                    <MudField Label="City, State" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.CityState</MudField>
+                    <MudField Label="Zip Code" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Zip</MudField>
+                    <MudField Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Email</MudField>
+                    <MudField Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Phone</MudField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 
 @code {
+    [Parameter]
+    public int ID { get; set; }
 
+    Customer customer = new Customer() { Date = DateTime.Now };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
+    }
 }

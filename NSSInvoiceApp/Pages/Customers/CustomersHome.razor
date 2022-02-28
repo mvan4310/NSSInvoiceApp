@@ -1,5 +1,72 @@
-﻿<h3>CustomersHome</h3>
+﻿@page "/customers/"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+<br />
+
+<MudPaper >
+    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@customers" T="Customer" HorizontalScrollbar="true" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+        <ToolBarContent>
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <Column T="Customer" Field="Name" />
+            <Column T="Customer" Field="CityState" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Customer" />
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
 
 @code {
+    List<Customer> customers = new();
+    MudDataGrid<Customer> grid;
+    bool IsLoading = true;
+    private string _searchString;
 
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Customers";
+
+        try
+        {
+            await Task.Run(() => LoadPageDetails().ConfigureAwait(false));
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    async Task LoadPageDetails()
+    {
+        if (IsLoading)
+        {
+            IsLoading = true;
+            customers = dataService.Instance.Customers.ToList();
+
+            await InvokeAsync(StateHasChanged);
+
+            IsLoading = false;
+        }
+
+    }
+
+    void SelectionChanged(Customer args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            navigationManager.NavigateTo($"/customers/view/{grid.SelectedItem.Id}");
+        }
+    }
 }

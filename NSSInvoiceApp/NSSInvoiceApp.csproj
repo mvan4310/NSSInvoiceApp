@@ -63,9 +63,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Template.xlsx" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="MudBlazor" Version="6.0.7" />
 	  <PackageReference Include="Syncfusion.Maui.Charts" Version="19.4.53-preview" />
 	  <PackageReference Include="Syncfusion.XlsIO.NET" Version="19.4.0.53" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Resources\Template.xlsx" />
 	</ItemGroup>
 
 </Project>

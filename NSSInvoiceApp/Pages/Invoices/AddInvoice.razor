@@ -1,5 +1,144 @@
-﻿<h3>AddInvoice</h3>
+﻿@page "/invoices/add"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+<header>
+    <div class="container-fluid p-3 text-center page-header">
+        <h1>Add New Invoice</h1>
+    </div>
+</header>
+<br />
+
+@if (showAddInvoiceDialog)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Add Invoice Item</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <EditForm Model="@newItem" OnValidSubmit="OnItemAdded">
+                    <DataAnnotationsValidator />
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="7">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudTextField @bind-Value="@newItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudDivider />
+                                    <MudTextField @bind-Value="@newItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <MudDivider />
+                                    <MudNumericField @bind-Value="@newItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <MudDivider />
+                                    <MudCheckBox @bind-Checked="@newItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Item</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+<EditForm Model="@invoice" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect T="int" Label="Customer" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="@invoice.CustomerId">
+                        @foreach (var item in customers)
+                        {
+                            <MudSelectItem T="int" Value="@item.Id" />
+                        }
+                    </MudSelect>
+                    <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
+                    <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
+                    <MudDataGrid Items="@InvoiceItems">
+                        <Columns>
+                            <Column T="InvoiceItem" Field="Description" />
+                            <Column T="InvoiceItem" Field="Quantity" />
+                            <Column T="InvoiceItem" Field="Price" />
+                            <Column T="InvoiceItem" Field="IsTax" />
+                        </Columns>
+                    </MudDataGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Invoice</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
 
 @code {
+    Invoice invoice = new Invoice() { Date = DateTime.Now, DueDate = DateTime.Now.AddDays(1) };
+    List<InvoiceItem> InvoiceItems = new List<InvoiceItem>();
+    List<Customer> customers = new List<Customer>();
 
+    InvoiceItem newItem = new InvoiceItem();
+
+    bool showAddInvoiceDialog = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        customers = dataService.Instance.Customers.OrderBy(a => a.Name).ToList();
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        invoice.Id = dataService.Instance.Invoices.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        invoice.CustomerId = dataService.Instance.Customers.First(a => a.Name == invoice.Customer).Id;
+
+        int newestId = dataService.Instance.InvoiceItems.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        foreach (var item in InvoiceItems)
+        {
+            item.InvoiceId = invoice.Id;
+            item.Id = newestId;
+            newestId++;
+        }
+
+        navigationManager.NavigateTo($"/invoices/view/{invoice.Id}");
+        StateHasChanged();
+    }
+
+    private void ShowItemDialog()
+    {
+        showAddInvoiceDialog = true;
+    }
+
+    private void CancelItemDialog()
+    {
+        showAddInvoiceDialog = false;
+        newItem = new();
+    }
+
+    private void OnItemAdded(EditContext context)
+    {
+        newItem.TotalPrice = newItem.Price * newItem.Quantity;
+
+        InvoiceItems.Add(newItem);
+        showAddInvoiceDialog = false;
+        newItem = new();
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+
+        StateHasChanged();
+    }
 }

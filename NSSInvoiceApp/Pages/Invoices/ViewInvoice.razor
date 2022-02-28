@@ -1,5 +1,38 @@
-﻿<h3>ViewInvoice</h3>
+﻿@page "/invoices/view/{ID:int}"
+
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudCardContent>
+                <MudField Label="Number" Variant="Variant.Outlined">@invoice.InvoiceNumber</MudField>
+                <MudField Label="Customer" Variant="Variant.Outlined">@invoice.Customer</MudField>
+                <MudField Label="Date">@invoice.Date</MudField>
+                <MudField Label="Due Date">@invoice.DueDate</MudField>
+                <MudDataGrid Items="@InvoiceItems">
+                    <Columns>
+                        <Column T="InvoiceItem" Field="Description" />
+                        <Column T="InvoiceItem" Field="Quantity" />
+                        <Column T="InvoiceItem" Field="Price" />
+                        <Column T="InvoiceItem" Field="IsTax" />
+                    </Columns>
+                </MudDataGrid>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto">Send...</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
 @code {
+    [Parameter]
+    public int ID { get; set; }
 
+    Invoice invoice = new();
+    List<InvoiceItem> InvoiceItems = new();
+    protected override async Task OnParametersSetAsync()
+    {
+    }
 }

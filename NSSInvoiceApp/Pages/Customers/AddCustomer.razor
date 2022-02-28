@@ -1,5 +1,56 @@
-﻿<h3>AddCustomer</h3>
+﻿@page "/customers/add"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+<header>
+    <div class="container-fluid p-3 text-center page-header">
+        <h1>Add New Customer</h1>
+    </div>
+</header>
+<br />
+
+<EditForm Model="@customer" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="@customer.Name" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="@customer.Address" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="@customer.CityState" Label="City, State" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="@customer.Zip" Label="Zip Code" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="@customer.Email" Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <MudTextField @bind-Value="@customer.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Customer</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
 
 @code {
+    Customer customer = new Customer() { Date = DateTime.Now };
 
+    protected override async Task OnParametersSetAsync()
+    {
+
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        customer.Id = dataService.Instance.Customers.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+
+        dataService.Instance.Customers.Add(customer);
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/customers/view/{customer.Id}");
+        StateHasChanged();
+    }
 }

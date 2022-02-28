@@ -18,6 +18,14 @@ a, .btn-link {
 	border-color: #1861ac;
 }
 
+.mandatory {
+	background-color: #fdff8f !important;
+}
+
+.inner-center {
+	margin: 0 auto;
+}
+
 .content {
 	padding-top: 1.1rem;
 }
