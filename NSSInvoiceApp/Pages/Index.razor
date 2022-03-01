@@ -20,12 +20,12 @@
 
 <br />
 <MudPaper>
-    <MudDataGrid MultiSelection="true" Items="@invoices" Sortable="true" Filterable="true">
+    <MudDataGrid MultiSelection="true" Breakpoint="Breakpoint.None" Items="@invoices" Sortable="true" Filterable="true">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Latest Invoices</MudText>
+            <MudText Typo="Typo.h6">Last 5 Invoices</MudText>
         </ToolBarContent>
         <Columns>
-            <Column T="Invoice" Field="Date" />
+            <Column T="Invoice" Field="Date"/>
             <Column T="Invoice" Field="Customer" />
             <Column T="Invoice" Field="TotalAmount" />
             <Column T="Invoice" Field="ReceivedPayment" CellStyleFunc="@_cellStyleFunc" />
@@ -35,9 +35,9 @@
 
 <br />
 <MudPaper>
-    <MudDataGrid MultiSelection="true" Items="@expenses" Sortable="true" Filterable="true">
+    <MudDataGrid MultiSelection="true" Breakpoint="Breakpoint.None" Items="@expenses" Sortable="true" Filterable="true">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Latest Expenses</MudText>
+            <MudText Typo="Typo.h6">Last 5 Expenses</MudText>
         </ToolBarContent>
         <Columns>
             <Column T="Expense" Field="Date" />
@@ -83,19 +83,16 @@
     {
         if (IsLoading)
         {
-            IsLoading = true;
-            var _data = dataService.Instance.Invoices.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).DefaultIfEmpty(0).Sum();
-            var _expenses = dataService.Instance.Expenses.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).DefaultIfEmpty(0).Sum();
-            expenses = dataService.Instance.Expenses.Where(a => a.Date > DateTime.Now.AddDays(-30)).OrderByDescending(a => a.Date).Take(5).ToList();
-            invoices = dataService.Instance.Invoices.Where(a => a.Date > DateTime.Now.AddDays(-30)).OrderByDescending(a => a.Date).Take(5).ToList();
-            chartValues[0] = _data;
-            chartValues[1] = _expenses;
-            _chartTotal = (_data - _expenses).ToString("C");
-            await InvokeAsync(StateHasChanged);
-
-            IsLoading = false;
+            IsLoading = true;            IsLoading = false;
         }
-
+        var _data = dataService.Instance.Invoices.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).DefaultIfEmpty(0).Sum();
+        var _expenses = dataService.Instance.Expenses.Where(a => a.Date.Month == DateTime.Now.Month).Select(a => a.TotalAmount).DefaultIfEmpty(0).Sum();
+        expenses = dataService.Instance.Expenses.Where(a => a.Date > DateTime.Now.AddDays(-30)).OrderByDescending(a => a.Date).Take(5).ToList();
+        invoices = dataService.Instance.Invoices.Where(a => a.Date > DateTime.Now.AddDays(-30)).OrderByDescending(a => a.Date).Take(5).ToList();
+        chartValues[0] = _data;
+        chartValues[1] = _expenses;
+        _chartTotal = (_data - _expenses).ToString("C");
+        await InvokeAsync(StateHasChanged);
     }
 
     private Func<Invoice, string> _cellStyleFunc => x =>
@@ -103,6 +100,6 @@
         string style = "";
 
         if (!x.ReceivedPayment)
-            style += "background-color:#880E4F";        return style;
+            style += "background-color:#880E4F"; return style;
     };
 }

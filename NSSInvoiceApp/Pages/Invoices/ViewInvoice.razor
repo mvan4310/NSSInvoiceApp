@@ -4,6 +4,12 @@
 @inject NavigationManager navigationManager
 
 <MudGrid>
+    @if (!invoice.ReceivedPayment)
+    {
+        <MudItem xs="12" sm="12" md="12">
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:100%;" OnClick="@OnPaidClicked">Mark As Paid</MudButton>
+        </MudItem>
+    }
     <MudItem xs="12" sm="7">
         <MudCard>
             <MudCardContent>
@@ -11,7 +17,7 @@
                 <MudField Label="Customer" Variant="Variant.Outlined">@invoice.Customer</MudField>
                 <MudField Label="Date">@invoice.Date</MudField>
                 <MudField Label="Due Date">@invoice.DueDate</MudField>
-                <MudDataGrid Items="@InvoiceItems">
+                <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None">
                     <Columns>
                         <Column T="InvoiceItem" Field="Description" />
                         <Column T="InvoiceItem" Field="Quantity" />
@@ -22,8 +28,8 @@
             </MudCardContent>
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto">Send...</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" OnClick="@OnSendClicked">Send...</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@OnEditClicked">Edit</MudButton>
             </MudCardActions>
         </MudCard>
     </MudItem>
@@ -46,11 +52,26 @@
 
     private void OnSendClicked()
     {
-        
+
     }
 
     private void OnCancelClicked()
     {
         navigationManager.NavigateTo($"/invoices/");
+    }
+
+    private void OnEditClicked()
+    {
+        navigationManager.NavigateTo($"/invoices/edit/{invoice.Id}");
+    }
+
+    private async void OnPaidClicked()
+    {
+        invoice.DateReceived = DateTime.Now;
+        invoice.ReceivedPayment = true;
+
+        dataService.SaveData();
+
+        await InvokeAsync(StateHasChanged);
     }
 }

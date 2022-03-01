@@ -6,7 +6,7 @@
 <br />
 
 <MudPaper >
-    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+    <MudDataGrid @ref="@grid" MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>

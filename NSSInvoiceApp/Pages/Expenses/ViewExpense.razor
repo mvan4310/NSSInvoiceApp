@@ -4,22 +4,22 @@
 @inject NavigationManager navigationManager
 
 <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardContent>
-                    <MudField Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense">@expense.Name</MudField>
-                    <br />
-                    <MudField Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney">@expense.TotalAmount</MudField>
-                    <br />
-                    <MudField Label="Date" >@expense.Date.ToShortDateString()</MudField>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"OnClick="@OnEditClicked">Edit</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudCardContent>
+                <MudField Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense">@expense.Name</MudField>
+                <br />
+                <MudField Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney">@expense.TotalAmount</MudField>
+                <br />
+                <MudField Label="Date">@expense.Date.ToShortDateString()</MudField>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@OnEditClicked">Edit</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
 @code {
     [Parameter]

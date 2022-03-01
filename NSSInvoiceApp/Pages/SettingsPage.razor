@@ -22,6 +22,7 @@
     {
         dataService.Instance.LastUpdated = DateTime.Now.ToString();
         dataService.Instance.EnableDarkMode = value;
+        
         dataService.SaveData();
         StateHasChanged();
 
@@ -57,4 +58,15 @@
             }
         }
     }
+
+    public class ThemeDetails
+    {
+        public string ID { get; set; }
+        public string Text { get; set; }
+    }
+
+    private List<ThemeDetails> Themes = new List<ThemeDetails>() {
+        new ThemeDetails(){ ID = "material", Text = "Material" },
+        new ThemeDetails(){ ID = "material-dark", Text = "Material Dark" },
+    };
 }

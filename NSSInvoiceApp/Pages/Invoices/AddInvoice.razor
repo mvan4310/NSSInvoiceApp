@@ -63,7 +63,7 @@
                     </MudSelect>
                     <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
                     <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
-                    <MudDataGrid Items="@InvoiceItems">
+                    <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None">
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
                             <Column T="InvoiceItem" Field="Quantity" />

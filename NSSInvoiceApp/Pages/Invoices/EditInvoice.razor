@@ -1,0 +1,334 @@
+﻿@page "/invoices/edit/{ID:int}"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+@if (showAddInvoiceDialog)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Add Invoice Item</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <EditForm Model="@newItem" OnValidSubmit="OnItemAdded">
+                    <DataAnnotationsValidator />
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="7">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudTextField @bind-Value="@newItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudDivider />
+                                    <MudTextField @bind-Value="@newItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <MudDivider />
+                                    <MudNumericField @bind-Value="@newItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <MudDivider />
+                                    <MudCheckBox @bind-Checked="@newItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemAdded" Class="ml-auto">Add</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+@if (showDeleteItemVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Item?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+@if (showDeleteVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Invoice?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This will remove all invoice items as well. This action is not reversible.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+@if (showEditInvoiceDialog)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Edit Invoice Item</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <EditForm Model="@existingItem" OnValidSubmit="OnItemEdited">
+                    <DataAnnotationsValidator />
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="7">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudTextField @bind-Value="@existingItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudDivider />
+                                    <MudTextField @bind-Value="@existingItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <MudDivider />
+                                    <MudNumericField @bind-Value="@existingItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <MudDivider />
+                                    <MudCheckBox @bind-Checked="@existingItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            </MudCardContent>
+            <MudCardActions>
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteItemVerify" />
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemEdited" Class="ml-auto">Save</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+<EditForm Model="@invoice" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudNumericField @bind-Value="@invoice.InvoiceNumber" T="int" Label="Invoice Number" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                    <MudSelect T="string" Label="Customer" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="@invoice.Customer">
+                        @foreach (var item in customers)
+                        {
+                            <MudSelectItem T="string" Value="@item.Name" />
+                        }
+                    </MudSelect>
+                    <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
+                    <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
+                    @*<SfGrid DataSource="@InvoiceItems" TValue="InvoiceItem" >
+                        <GridColumns>
+                            <GridColumn Field="@nameof(InvoiceItem.Description)" HeaderText="Item"></GridColumn>
+                            <GridColumn Field="@nameof(InvoiceItem.Quantity)"></GridColumn>
+                            <GridColumn Field="@nameof(InvoiceItem.Price)"></GridColumn>
+                            <GridColumn HeaderText=" " TextAlign="TextAlign.Center" Context="con">
+                                <Template>
+                                    @{
+                                        var item = (con as InvoiceItem);
+                                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Tertiary" Class="ml-auto" Icon="@Icons.Outlined.Edit" />
+                                    }
+                                </Template>
+                            </GridColumn>
+                        </GridColumns>
+                    </SfGrid>*@
+                    <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None" >
+                        <Columns>
+                            <Column T="InvoiceItem" Field="Description" />
+                            <Column T="InvoiceItem" Field="Quantity" />
+                            <Column T="InvoiceItem" Field="Price" />
+                            <Column T="InvoiceItem" Field="IsTax" />
+                            <Column T="InvoiceItem" Title="Actions">
+                                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" />
+                            </Column>
+                        </Columns>
+                    </MudDataGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" OnClick="@ShowItemDialog">Add Item</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+
+    Invoice invoice = new();
+    List<InvoiceItem> InvoiceItems = new();
+    List<Customer> customers = new List<Customer>();
+
+    InvoiceItem newItem = new InvoiceItem();
+    InvoiceItem existingItem = new InvoiceItem();
+
+    bool showAddInvoiceDialog = false;
+    bool showEditInvoiceDialog = false;
+    bool showDeleteVerify = false;
+    bool showDeleteItemVerify = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Edit Invoice";
+        invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID);
+        InvoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
+        customers = dataService.Instance.Customers.OrderBy(a => a.Name).ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/invoices/");
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        if (InvoiceItems.Count < 1)
+        {
+            snackbar.Add("Must have at least one item on the invoice to save.", Severity.Error);
+            return;
+        }
+        invoice.Id = dataService.Instance.Invoices.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        invoice.CustomerId = dataService.Instance.Customers.First(a => a.Name == invoice.Customer).Id;
+
+        int newestId = dataService.Instance.InvoiceItems.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        foreach (var item in InvoiceItems)
+        {
+            item.InvoiceId = invoice.Id;
+            item.Id = newestId;
+
+            dataService.Instance.InvoiceItems.Add(item);
+
+            newestId++;
+        }
+
+        dataService.Instance.Invoices.Add(invoice);
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/invoices/view/{invoice.Id}");
+        StateHasChanged();
+    }
+
+    private void ShowItemDialog()
+    {
+        showAddInvoiceDialog = true;
+    }
+
+    private void CancelItemDialog()
+    {
+        showAddInvoiceDialog = false;
+        newItem = new();
+
+        showEditInvoiceDialog = false;
+        existingItem = new();
+    }
+
+    private void OnItemAdded()
+    {
+        newItem.TotalPrice = newItem.Price * newItem.Quantity;
+
+        InvoiceItems.Add(newItem);
+        showAddInvoiceDialog = false;
+        newItem = new();
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+        dataService.SaveData();
+        StateHasChanged();
+    }
+
+    private void OnItemEdited()
+    {
+        existingItem.TotalPrice = existingItem.Price * existingItem.Quantity;
+
+        showEditInvoiceDialog = false;
+        existingItem = new();
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+        dataService.SaveData();
+        StateHasChanged();
+    }
+
+    private void OnItemDeleted()
+    {
+        dataService.Instance.InvoiceItems.Remove(existingItem);
+        InvoiceItems.Remove(existingItem);
+
+        showEditInvoiceDialog = false;
+        showDeleteItemVerify = false;
+        existingItem = new();
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+        dataService.SaveData();
+        StateHasChanged();
+    }
+
+    private void ShowDeleteItemVerify()
+    {
+        showDeleteItemVerify = true;
+    }
+
+    private void ShowDeleteVerify()
+    {
+        showDeleteVerify = true;
+    }
+
+    private void CancelDeleteVerify()
+    {
+        showDeleteItemVerify = false;
+        showDeleteVerify = false;
+    }
+
+    private void OnItemTapped(InvoiceItem item)
+    {
+        showEditInvoiceDialog = true;
+        existingItem = item;
+    }
+
+    private void OnDeleteInvoice()
+    {
+        foreach (var item in InvoiceItems)
+        {
+            dataService.Instance.InvoiceItems.Remove(item);
+        }
+        dataService.Instance.Invoices.Remove(invoice);
+
+        showEditInvoiceDialog = false;
+        showDeleteItemVerify = false;
+        existingItem = new();
+
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/invoices/");
+
+        StateHasChanged();
+    }
+}
