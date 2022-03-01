@@ -1,4 +1,7 @@
 ﻿@page "/invoices/view/{ID:int}"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
 
 <MudGrid>
     <MudItem xs="12" sm="7">
@@ -18,7 +21,7 @@
                 </MudDataGrid>
             </MudCardContent>
             <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto">Send...</MudButton>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
             </MudCardActions>
@@ -34,5 +37,20 @@
     List<InvoiceItem> InvoiceItems = new();
     protected override async Task OnParametersSetAsync()
     {
+        dataService.Title = "View Invoice";
+        invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID);
+        InvoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnSendClicked()
+    {
+        
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/invoices/");
     }
 }

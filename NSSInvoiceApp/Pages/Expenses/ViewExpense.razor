@@ -1,5 +1,45 @@
-﻿<h3>ViewExpense</h3>
+﻿@page "/expenses/view/{ID:int}"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+<MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudField Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense">@expense.Name</MudField>
+                    <br />
+                    <MudField Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney">@expense.TotalAmount</MudField>
+                    <br />
+                    <MudField Label="Date" >@expense.Date.ToShortDateString()</MudField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"OnClick="@OnEditClicked">Edit</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 
 @code {
+    [Parameter]
+    public int ID { get; set; }
 
+    Expense expense = new Expense() { Date = DateTime.Now };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "View Expense";
+        expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID);
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/expenses/");
+    }
+
+    private void OnEditClicked()
+    {
+        navigationManager.NavigateTo($"/expenses/edit/{expense.Id}");
+    }
 }

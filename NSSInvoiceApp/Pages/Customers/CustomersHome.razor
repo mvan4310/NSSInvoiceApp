@@ -6,14 +6,13 @@
 <br />
 
 <MudPaper >
-    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@customers" T="Customer" HorizontalScrollbar="true" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@customers" T="Customer" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
             <Column T="Customer" Field="Name" />
-            <Column T="Customer" Field="CityState" />
         </Columns>
         <PagerContent>
             <MudDataGridPager T="Customer" />

@@ -1,10 +1,7 @@
-﻿@page "/expenses/add"
+﻿@page "/expenses/edit/{ID:int}"
 @inject DataService dataService;
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
-
-@using System.Text.RegularExpressions
-@using System.ComponentModel.DataAnnotations
 
 <EditForm Model="@expense" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -28,18 +25,24 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public int ID { get; set; }
+
     Expense expense = new Expense() { Date = DateTime.Now };
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Add Expense";
+        dataService.Title = "Edit Expense";
+        expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID);
     }
 
     private void OnValidSubmit(EditContext context)
     {
-        expense.Id = dataService.Instance.Expenses.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        var _expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID);
+        _expense.Date = expense.Date;
+        _expense.Name = expense.Name;
+        _expense.TotalAmount = expense.TotalAmount;
 
-        dataService.Instance.Expenses.Add(expense);
         dataService.SaveData();
 
         navigationManager.NavigateTo($"/expenses/view/{expense.Id}");

@@ -1,4 +1,4 @@
-﻿@page "/customers/add"
+﻿@page "/customers/edit/{ID:int}"
 @inject DataService dataService;
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
@@ -34,18 +34,27 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public int ID { get; set; }
+
     Customer customer = new Customer() { Date = DateTime.Now };
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Add Customer";
+        dataService.Title = "Edit Customer";
+        customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
     }
 
     private void OnValidSubmit(EditContext context)
     {
-        customer.Id = dataService.Instance.Customers.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
+        var _customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
+        _customer.Name = customer.Name;
+        _customer.Address = customer.Address;
+        _customer.CityState = customer.CityState;
+        _customer.Zip = customer.Zip;
+        _customer.Email = customer.Email;
+        _customer.Phone = customer.Phone;
 
-        dataService.Instance.Customers.Add(customer);
         dataService.SaveData();
 
         navigationManager.NavigateTo($"/customers/view/{customer.Id}");

@@ -1,5 +1,73 @@
-﻿<h3>ExpensesHome</h3>
+﻿@page "/expenses/"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+<br />
+
+<MudPaper >
+    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@expenses" T="Expense" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+        <ToolBarContent>
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <Column T="Expense" Field="Date" />
+            <Column T="Expense" Field="Name" Title="Description" />
+            <Column T="Expense" Field="TotalAmount" Title="Amount" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Expense" />
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
 
 @code {
+    List<Expense> expenses = new();
+    MudDataGrid<Expense> grid;
+    bool IsLoading = true;
+    private string _searchString;
 
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Expenses";
+
+        try
+        {
+            await Task.Run(() => LoadPageDetails().ConfigureAwait(false));
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    async Task LoadPageDetails()
+    {
+        if (IsLoading)
+        {
+            IsLoading = true;
+            expenses = dataService.Instance.Expenses.ToList();
+
+            await InvokeAsync(StateHasChanged);
+
+            IsLoading = false;
+        }
+
+    }
+
+    void SelectionChanged(Expense args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            navigationManager.NavigateTo($"/expenses/view/{grid.SelectedItem.Id}");
+        }
+    }
 }

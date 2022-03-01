@@ -6,26 +6,25 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
-<header>
-    <div class="container-fluid p-3 text-center page-header">
-        <h1>View Customer</h1>
-    </div>
-</header>
-<br />
-
 <MudGrid>
         <MudItem xs="12" sm="7">
             <MudCard>
                 <MudCardContent>
                     <MudField Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Name</MudField>
+                    <br />
                     <MudField Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Address</MudField>
+                    <br />
                     <MudField Label="City, State" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.CityState</MudField>
+                    <br />
                     <MudField Label="Zip Code" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Zip</MudField>
+                    <br />
                     <MudField Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Email</MudField>
+                    <br />
                     <MudField Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Phone</MudField>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"OnClick="@OnEditClicked">Edit</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -39,6 +38,17 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        dataService.Title = "View Customer";
         customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/customers/");
+    }
+
+    private void OnEditClicked()
+    {
+        navigationManager.NavigateTo($"/customers/edit/{customer.Id}");
     }
 }

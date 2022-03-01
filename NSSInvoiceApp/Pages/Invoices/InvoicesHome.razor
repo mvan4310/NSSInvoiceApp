@@ -1,5 +1,82 @@
-﻿<h3>InvoicesHome</h3>
+﻿@page "/invoices/"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+<br />
+
+<MudPaper >
+    <MudDataGrid @ref="@grid" MultiSelection="false" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+        <ToolBarContent>
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <Column T="Invoice" Field="Date" />
+            <Column T="Invoice" Field="Customer" />
+            <Column T="Invoice" Field="TotalAmount" />
+            <Column T="Invoice" Field="ReceivedPayment" CellStyleFunc="@_cellStyleFunc" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Invoice" />
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
 
 @code {
+    List<Invoice> invoices = new();
+    MudDataGrid<Invoice> grid;
+    bool IsLoading = true;
+    private string _searchString;
 
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Invoices";
+
+        try
+        {
+            await Task.Run(() => LoadPageDetails().ConfigureAwait(false));
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    async Task LoadPageDetails()
+    {
+        if (IsLoading)
+        {
+            IsLoading = true;
+            invoices = dataService.Instance.Invoices.ToList();
+
+            await InvokeAsync(StateHasChanged);
+
+            IsLoading = false;
+        }
+
+    }
+
+    void SelectionChanged(Invoice args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            navigationManager.NavigateTo($"/invoices/view/{grid.SelectedItem.Id}");
+        }
+    }
+
+    private Func<Invoice, string> _cellStyleFunc => x =>
+    {
+        string style = "";
+
+        if (!x.ReceivedPayment)
+            style += "background-color:#880E4F";        return style;
+    };
 }
