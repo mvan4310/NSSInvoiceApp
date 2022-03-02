@@ -9,8 +9,13 @@
 <MudLayout>
     <MudList Clickable="true">
         <MudSwitch Checked="@dataService.Instance.EnableDarkMode" Label="Enable Dark Mode" Color="Color.Primary" T="bool" CheckedChanged="@DarkModeChanged" />
-        <MudDivider />
-        <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Share" OnClick="OnExport" />
+        <br />
+        <br />
+        <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="ml-auto" Style="width:100%;" OnClick="@OnDetailsClicked">Edit Company Details</MudButton>
+        <br />
+        <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Save" OnClick="OnExport" />
+        <br />
+        <MudListItem Text="Import Saved Data" Disabled="true" Icon="@Icons.Material.Filled.ImportExport"  />
     </MudList>
 </MudLayout>
 
@@ -32,6 +37,11 @@
         //We do this twice so we can get the new theme to show without the user having to do something. Maybe I can find a better way later, but this works
         dataService.ToggleSidebar.Invoke();
         dataService.ToggleSidebar.Invoke();
+    }
+
+    private void OnDetailsClicked()
+    {
+        navigationManager.NavigateTo($"/settings/company/");
     }
 
     private void OnExport()

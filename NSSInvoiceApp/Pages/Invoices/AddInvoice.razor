@@ -6,6 +6,68 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
+@if (showDeleteItemVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Item?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This action is not reversible.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+@if (showEditInvoiceDialog)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Edit Invoice Item</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <EditForm Model="@existingItem" OnValidSubmit="OnItemEdited">
+                    <DataAnnotationsValidator />
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="7">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudTextField @bind-Value="@existingItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <br />
+                                    <MudTextField @bind-Value="@existingItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <br />
+                                    <MudNumericField @bind-Value="@existingItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <br />
+                                    <MudCheckBox @bind-Checked="@existingItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            </MudCardContent>
+            <MudCardActions>
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteItemVerify" />
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemEdited" Class="ml-auto">Save</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
 @if (showAddInvoiceDialog)
 {
     <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
@@ -27,11 +89,11 @@
                             <MudCard>
                                 <MudCardContent>
                                     <MudTextField @bind-Value="@newItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                    <MudDivider />
+                                    <br />
                                     <MudTextField @bind-Value="@newItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                    <MudDivider />
+                                    <br />
                                     <MudNumericField @bind-Value="@newItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                    <MudDivider />
+                                    <br />
                                     <MudCheckBox @bind-Checked="@newItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
                                 </MudCardContent>
                             </MudCard>
@@ -55,15 +117,22 @@
             <MudCard>
                 <MudCardContent>
                     <MudNumericField @bind-Value="@invoice.InvoiceNumber" T="int" Label="Invoice Number" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                    <br />
                     <MudSelect T="string" Label="Customer" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="@invoice.Customer">
                         @foreach (var item in customers)
                         {
                             <MudSelectItem T="string" Value="@item.Name" />
                         }
                     </MudSelect>
-                    <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
-                    <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
-                    <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None">
+                    <br />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" />
+                    <br />
+                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" />
+                    <br />
+                    <br />
+                    <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
+                    <br />
+                    <MudDataGrid @ref="@grid" T="InvoiceItem" Items="@InvoiceItems" Breakpoint="Breakpoint.None" SelectedItemChanged="@SelectionChanged">
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
                             <Column T="InvoiceItem" Field="Quantity" />
@@ -89,6 +158,10 @@
     InvoiceItem newItem = new InvoiceItem();
 
     bool showAddInvoiceDialog = false;
+    InvoiceItem existingItem = new InvoiceItem();
+    MudDataGrid<InvoiceItem> grid;
+    bool showEditInvoiceDialog = false;
+    bool showDeleteItemVerify = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -134,6 +207,10 @@
     {
         showAddInvoiceDialog = false;
         newItem = new();
+
+        showEditInvoiceDialog = false;
+        existingItem = new();
+        grid.SelectedItem = null;
     }
 
     private void OnItemAdded()
@@ -146,6 +223,64 @@
 
         invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
 
+        StateHasChanged();
+    }
+
+    private void OnItemEdited()
+    {
+        existingItem.TotalPrice = existingItem.Price * existingItem.Quantity;
+
+        showEditInvoiceDialog = false;
+        existingItem = new();
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+        dataService.SaveData();
+        StateHasChanged();
+    }
+
+    private void OnItemDeleted()
+    {
+        dataService.Instance.InvoiceItems.Remove(existingItem);
+        InvoiceItems.Remove(existingItem);
+
+        showEditInvoiceDialog = false;
+        showDeleteItemVerify = false;
+        existingItem = new();
+        grid.SelectedItem = null;
+
+        invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
+        dataService.SaveData();
+        StateHasChanged();
+    }
+
+    private void ShowDeleteItemVerify()
+    {
+        showDeleteItemVerify = true;
+        showEditInvoiceDialog = false;
+        StateHasChanged();
+    }
+
+    private void OnItemTapped(InvoiceItem item)
+    {
+        showEditInvoiceDialog = true;
+        existingItem = item;
+        StateHasChanged();
+    }
+
+    void SelectionChanged(InvoiceItem args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            OnItemTapped(args);
+        }
+    }
+
+    private void CancelDeleteVerify()
+    {
+        showDeleteItemVerify = false;
+
+        existingItem = new();
+        grid.SelectedItem = null;
         StateHasChanged();
     }
 }

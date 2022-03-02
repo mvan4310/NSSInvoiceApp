@@ -1,0 +1,55 @@
+﻿@page "/settings/company/"
+@inject DataService dataService;
+@inject ISnackbar snackbar
+@inject NavigationManager navigationManager
+
+
+<EditForm Model="@dataService.Instance" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyName" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <br />
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyAddress" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <br />
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyCityState" Label="City, State" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <br />
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyZip" Label="Zip Code" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <br />
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyEmail" Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                    <br />
+                    <MudTextField @bind-Value="@dataService.Instance.CompanyPhone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Edit Company Details";
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/settings");
+        StateHasChanged();
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/settings/");
+    }
+}

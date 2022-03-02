@@ -3,6 +3,42 @@
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
 
+@if (showEditInvoiceDialog)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">View Invoice Item</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                        <MudItem xs="12" sm="7">
+                            <MudCard>
+                                <MudCardContent>
+                                    <MudTextField @bind-Value="@existingItem.Description" ReadOnly="true" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <br />
+                                    <MudTextField @bind-Value="@existingItem.Price" ReadOnly="true" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <br />
+                                    <MudNumericField @bind-Value="@existingItem.Quantity" ReadOnly="true" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <br />
+                                    <MudCheckBox @bind-Checked="@existingItem.IsTax" ReadOnly="true" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelItemDialog">Close</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
 <MudGrid>
     @if (!invoice.ReceivedPayment)
     {
@@ -14,15 +50,22 @@
         <MudCard>
             <MudCardContent>
                 <MudField Label="Number" Variant="Variant.Outlined">@invoice.InvoiceNumber</MudField>
+                <br />
                 <MudField Label="Customer" Variant="Variant.Outlined">@invoice.Customer</MudField>
-                <MudField Label="Date">@invoice.Date</MudField>
-                <MudField Label="Due Date">@invoice.DueDate</MudField>
-                <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None">
+                <br />
+                <MudField Variant="Variant.Outlined" Label="Date">@invoice.Date.ToShortDateString()</MudField>
+                <br />
+                <MudField Variant="Variant.Outlined" Label="Due Date">@invoice.DueDate.ToShortDateString()</MudField>
+                <br />
+                <br />
+                <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
+                <br />
+                <MudDataGrid @ref="@grid" T="InvoiceItem" Items="@InvoiceItems" Breakpoint="Breakpoint.None"  SelectedItemChanged="@SelectionChanged">
                     <Columns>
                         <Column T="InvoiceItem" Field="Description" />
                         <Column T="InvoiceItem" Field="Quantity" />
                         <Column T="InvoiceItem" Field="Price" />
-                        <Column T="InvoiceItem" Field="IsTax" />
+                        <Column T="InvoiceItem" Field="IsTax" Title="Tax?" />
                     </Columns>
                 </MudDataGrid>
             </MudCardContent>
@@ -41,6 +84,11 @@
 
     Invoice invoice = new();
     List<InvoiceItem> InvoiceItems = new();
+
+    InvoiceItem existingItem = new InvoiceItem();
+    bool showEditInvoiceDialog = false;
+    MudDataGrid<InvoiceItem> grid;
+
     protected override async Task OnParametersSetAsync()
     {
         dataService.Title = "View Invoice";
@@ -50,9 +98,11 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private void OnSendClicked()
+    private async void OnSendClicked()
     {
-
+        var customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == invoice.CustomerId);
+        DataService.ConvertInvoiceToPDF(invoice, InvoiceItems, customer, dataService.Instance);
+        await DataService.SendEmail("Invoice #" + invoice.InvoiceNumber.ToString() + " from " + dataService.Instance.CompanyName, "");
     }
 
     private void OnCancelClicked()
@@ -73,5 +123,27 @@
         dataService.SaveData();
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void CancelItemDialog()
+    {
+        showEditInvoiceDialog = false;
+        existingItem = new();
+        grid.SelectedItem = null;
+    }
+
+    void SelectionChanged(InvoiceItem args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            OnItemTapped(args);
+        }
+    }
+
+    private void OnItemTapped(InvoiceItem item)
+    {
+        showEditInvoiceDialog = true;
+        existingItem = item;
+        StateHasChanged();
     }
 }

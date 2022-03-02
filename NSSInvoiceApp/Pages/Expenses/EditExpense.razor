@@ -34,7 +34,7 @@
                     <br />
                     <MudTextField @bind-Value="@expense.TotalAmount" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
                     <br />
-                    <MudDatePicker Label="Date" @bind-Value="@expense.Date" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@expense.Date" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />

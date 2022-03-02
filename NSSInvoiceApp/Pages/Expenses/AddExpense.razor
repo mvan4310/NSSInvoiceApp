@@ -17,7 +17,7 @@
                     <br />
                     <MudTextField @bind-Value="@expense.TotalAmount" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
                     <br />
-                    <MudDatePicker Label="Date" @bind-Value="@expense.Date" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@expense.Date" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Expense</MudButton>

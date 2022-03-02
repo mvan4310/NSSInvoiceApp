@@ -11,7 +11,7 @@
                 <br />
                 <MudField Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney">@expense.TotalAmount</MudField>
                 <br />
-                <MudField Label="Date">@expense.Date.ToShortDateString()</MudField>
+                <MudField Label="Date" Variant="Variant.Outlined">@expense.Date.ToShortDateString()</MudField>
             </MudCardContent>
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>

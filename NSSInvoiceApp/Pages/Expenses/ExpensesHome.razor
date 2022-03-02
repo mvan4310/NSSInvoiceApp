@@ -12,7 +12,11 @@
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
-            <Column T="Expense" Field="Date" />
+            <Column T="Expense" Field="Date" Context="con">
+                <CellTemplate>
+                    <MudText>@con.Date.ToShortDateString()</MudText>
+                </CellTemplate>
+            </Column>
             <Column T="Expense" Field="Name" Title="Description" />
             <Column T="Expense" Field="TotalAmount" Title="Amount" />
         </Columns>

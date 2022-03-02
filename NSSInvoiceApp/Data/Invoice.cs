@@ -23,6 +23,7 @@ namespace NSSInvoiceApp.Data
         public int CustomerId { get; set; }
         public string Customer { get; set; }
 
+
         [Required]
         public DateTime DueDate { get; set; }
 

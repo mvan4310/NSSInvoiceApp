@@ -67,11 +67,11 @@
                             <MudCard>
                                 <MudCardContent>
                                     <MudTextField @bind-Value="@newItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                    <MudDivider />
+                                    <br />
                                     <MudTextField @bind-Value="@newItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                    <MudDivider />
+                                    <br />
                                     <MudNumericField @bind-Value="@newItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                    <MudDivider />
+                                    <br />
                                     <MudCheckBox @bind-Checked="@newItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
                                 </MudCardContent>
                             </MudCard>
@@ -108,11 +108,11 @@
                             <MudCard>
                                 <MudCardContent>
                                     <MudTextField @bind-Value="@existingItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                    <MudDivider />
+                                    <br />
                                     <MudTextField @bind-Value="@existingItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                    <MudDivider />
+                                    <br />
                                     <MudNumericField @bind-Value="@existingItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                    <MudDivider />
+                                    <br />
                                     <MudCheckBox @bind-Checked="@existingItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
                                 </MudCardContent>
                             </MudCard>
@@ -137,14 +137,21 @@
             <MudCard>
                 <MudCardContent>
                     <MudNumericField @bind-Value="@invoice.InvoiceNumber" T="int" Label="Invoice Number" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                    <br />
                     <MudSelect T="string" Label="Customer" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="@invoice.Customer">
                         @foreach (var item in customers)
                         {
                             <MudSelectItem T="string" Value="@item.Name" />
                         }
                     </MudSelect>
-                    <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
-                    <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
+                    <br />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" />
+                    <br />
+                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" />
+                    <br />
+                    <br />
+                    <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
+                    <br />
                     <MudDataGrid @ref="@grid" Items="@InvoiceItems" Breakpoint="Breakpoint.None" T="InvoiceItem" SelectedItemChanged="@SelectionChanged" >
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
@@ -236,6 +243,7 @@
 
         showEditInvoiceDialog = false;
         existingItem = new();
+        grid.SelectedItem = null;
     }
 
     private void OnItemAdded()
@@ -271,6 +279,7 @@
         showEditInvoiceDialog = false;
         showDeleteItemVerify = false;
         existingItem = new();
+        grid.SelectedItem = null;
 
         invoice.TotalAmount = InvoiceItems.Select(a => a.TotalPrice).DefaultIfEmpty(0).Sum();
         dataService.SaveData();
@@ -280,23 +289,30 @@
     private void ShowDeleteItemVerify()
     {
         showDeleteItemVerify = true;
+        showEditInvoiceDialog = false;
+        StateHasChanged();
     }
 
     private void ShowDeleteVerify()
     {
         showDeleteVerify = true;
+        StateHasChanged();
     }
 
     private void CancelDeleteVerify()
     {
         showDeleteItemVerify = false;
         showDeleteVerify = false;
+        existingItem = new();
+        grid.SelectedItem = null;
+        StateHasChanged();
     }
 
     private void OnItemTapped(InvoiceItem item)
     {
         showEditInvoiceDialog = true;
         existingItem = item;
+        StateHasChanged();
     }
 
     private void OnDeleteInvoice()
@@ -318,7 +334,7 @@
         StateHasChanged();
     }
 
-    void SelectionChanged(InvoiceItem args)
+     void SelectionChanged(InvoiceItem args)
     {
         if (grid.SelectedItem != null)
         {
