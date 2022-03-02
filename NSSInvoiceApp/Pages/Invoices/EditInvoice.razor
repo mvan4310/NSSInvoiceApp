@@ -6,6 +6,46 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
+@if (showDeleteItemVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Item?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This action is not reversible.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+@if (showDeleteVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Invoice?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This will remove all invoice items as well. This action is not reversible.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnDeleteInvoice" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
 @if (showAddInvoiceDialog)
 {
     <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
@@ -42,42 +82,6 @@
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemAdded" Class="ml-auto">Add</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
-}
-@if (showDeleteItemVerify)
-{
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Delete Item?</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
-}
-
-@if (showDeleteVerify)
-{
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Delete Invoice?</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText >This will remove all invoice items as well. This action is not reversible.</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
             </MudCardActions>
         </MudCard>
     </MudOverlay>
@@ -141,30 +145,12 @@
                     </MudSelect>
                     <MudDatePicker Label="Date" @bind-Value="@invoice.Date" />
                     <MudDatePicker Label="Due Date" @bind-Value="@invoice.DueDate" />
-                    @*<SfGrid DataSource="@InvoiceItems" TValue="InvoiceItem" >
-                        <GridColumns>
-                            <GridColumn Field="@nameof(InvoiceItem.Description)" HeaderText="Item"></GridColumn>
-                            <GridColumn Field="@nameof(InvoiceItem.Quantity)"></GridColumn>
-                            <GridColumn Field="@nameof(InvoiceItem.Price)"></GridColumn>
-                            <GridColumn HeaderText=" " TextAlign="TextAlign.Center" Context="con">
-                                <Template>
-                                    @{
-                                        var item = (con as InvoiceItem);
-                                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Tertiary" Class="ml-auto" Icon="@Icons.Outlined.Edit" />
-                                    }
-                                </Template>
-                            </GridColumn>
-                        </GridColumns>
-                    </SfGrid>*@
-                    <MudDataGrid Items="@InvoiceItems" Breakpoint="Breakpoint.None" >
+                    <MudDataGrid @ref="@grid" Items="@InvoiceItems" Breakpoint="Breakpoint.None" T="InvoiceItem" SelectedItemChanged="@SelectionChanged" >
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
                             <Column T="InvoiceItem" Field="Quantity" />
                             <Column T="InvoiceItem" Field="Price" />
                             <Column T="InvoiceItem" Field="IsTax" />
-                            <Column T="InvoiceItem" Title="Actions">
-                                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" />
-                            </Column>
                         </Columns>
                     </MudDataGrid>
                 </MudCardContent>
@@ -186,7 +172,7 @@
     Invoice invoice = new();
     List<InvoiceItem> InvoiceItems = new();
     List<Customer> customers = new List<Customer>();
-
+    MudDataGrid<InvoiceItem> grid;
     InvoiceItem newItem = new InvoiceItem();
     InvoiceItem existingItem = new InvoiceItem();
 
@@ -330,5 +316,13 @@
         navigationManager.NavigateTo($"/invoices/");
 
         StateHasChanged();
+    }
+
+    void SelectionChanged(InvoiceItem args)
+    {
+        if (grid.SelectedItem != null)
+        {
+            OnItemTapped(args);
+        }
     }
 }

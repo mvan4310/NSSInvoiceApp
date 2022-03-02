@@ -6,6 +6,26 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 
+@if (showDeleteVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Customer?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This will remove all related invoices as well. This action is not reversible. Do not do this if you need the invoice data.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnDeleteCustomer" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
 <EditForm Model="@customer" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
 
@@ -26,6 +46,8 @@
                     <MudTextField @bind-Value="@customer.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudCardContent>
                 <MudCardActions>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Customer</MudButton>
                 </MudCardActions>
             </MudCard>
@@ -38,6 +60,7 @@
     public int ID { get; set; }
 
     Customer customer = new Customer() { Date = DateTime.Now };
+    bool showDeleteVerify = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -59,5 +82,37 @@
 
         navigationManager.NavigateTo($"/customers/view/{customer.Id}");
         StateHasChanged();
+    }
+
+    private void ShowDeleteVerify()
+    {
+        showDeleteVerify = true;
+    }
+
+    private void CancelDeleteVerify()
+    {
+        showDeleteVerify = false;
+    }
+
+    private void OnDeleteCustomer()
+    {
+        foreach (var item in dataService.Instance.Invoices.Where(a => a.CustomerId == customer.Id).ToList())
+        {
+            dataService.Instance.Invoices.Remove(item);
+        }
+        dataService.Instance.Customers.Remove(customer);
+
+        customer = new();
+
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/customers/");
+
+        StateHasChanged();
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/customers/");
     }
 }

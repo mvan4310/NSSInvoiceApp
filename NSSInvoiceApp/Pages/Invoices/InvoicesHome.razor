@@ -12,10 +12,14 @@
                 AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
-            <Column T="Invoice" Field="Date" />
+            <Column T="Invoice" Field="Date" Context="con">
+                <CellTemplate>
+                    <MudText>@con.Date.ToShortDateString()</MudText>
+                </CellTemplate>
+            </Column>
             <Column T="Invoice" Field="Customer" />
-            <Column T="Invoice" Field="TotalAmount" />
-            <Column T="Invoice" Field="ReceivedPayment" CellStyleFunc="@_cellStyleFunc" />
+            <Column T="Invoice" Field="TotalAmount" Title="Amount" />
+            <Column T="Invoice" Field="ReceivedPayment" Title="Paid?" CellStyleFunc="@_cellStyleFunc" />
         </Columns>
         <PagerContent>
             <MudDataGridPager T="Invoice" />

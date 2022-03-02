@@ -7,6 +7,14 @@
 @using System.ComponentModel.DataAnnotations
 
 <MudGrid>
+    @if (showInfoTab)
+    {
+        <MudItem xs="12" sm="12" md="12">
+            <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ml-auto" Style="width:100%;" OnClick="@OnInfoClicked">Info</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="ml-auto" Style="width:100%;" OnClick="@OnInvoicesClicked">Invoices</MudButton>
+            </MudButtonGroup>
+        </MudItem>
         <MudItem xs="12" sm="7">
             <MudCard>
                 <MudCardContent>
@@ -24,22 +32,62 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"OnClick="@OnEditClicked">Edit</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@OnEditClicked">Edit</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
-    </MudGrid>
+    }
+    else
+    {
+        <MudItem xs="12" sm="12" md="12">
+            <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="ml-auto" Style="width:100%;" OnClick="@OnInfoClicked">Info</MudButton>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ml-auto" Style="width:100%;" OnClick="@OnInvoicesClicked">Invoices</MudButton>
+            </MudButtonGroup>
+        </MudItem>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudDataGrid MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true">
+                        <ToolBarContent>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </ToolBarContent>
+                        <Columns>
+                            <Column T="Invoice" Field="Date" Context="con">
+                                <CellTemplate>
+                                    <MudText>@con.Date.ToShortDateString()</MudText>
+                                </CellTemplate>
+                            </Column>
+                            <Column T="Invoice" Field="Customer" />
+                            <Column T="Invoice" Field="TotalAmount" />
+                            <Column T="Invoice" Field="ReceivedPayment" />
+                        </Columns>
+                        <PagerContent>
+                            <MudDataGridPager T="Invoice" />
+                        </PagerContent>
+                    </MudDataGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+
+</MudGrid>
 
 @code {
     [Parameter]
     public int ID { get; set; }
-
     Customer customer = new Customer() { Date = DateTime.Now };
+    List<Invoice> invoices = new();
+    bool showInfoTab = true;
+    bool showInvoicesTab = false;
+    private string _searchString;
 
     protected override async Task OnParametersSetAsync()
     {
         dataService.Title = "View Customer";
         customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
+        invoices = dataService.Instance.Invoices.Where(a => a.CustomerId == customer.Id).ToList();
     }
 
     private void OnCancelClicked()
@@ -50,5 +98,19 @@
     private void OnEditClicked()
     {
         navigationManager.NavigateTo($"/customers/edit/{customer.Id}");
+    }
+
+    private void OnInfoClicked()
+    {
+        showInfoTab = true;
+        showInvoicesTab = false;
+        StateHasChanged();
+    }
+
+    private void OnInvoicesClicked()
+    {
+        showInfoTab = false;
+        showInvoicesTab = true;
+        StateHasChanged();
     }
 }

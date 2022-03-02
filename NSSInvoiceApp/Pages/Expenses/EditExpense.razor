@@ -3,6 +3,26 @@
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
 
+@if (showDeleteVerify)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Delete Expense?</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText >This action is not reversible. Do not do this if you need the data.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnDeleteExpense" Class="ml-auto">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
 <EditForm Model="@expense" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
 
@@ -17,6 +37,8 @@
                     <MudDatePicker Label="Date" @bind-Value="@expense.Date" />
                 </MudCardContent>
                 <MudCardActions>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Expense</MudButton>
                 </MudCardActions>
             </MudCard>
@@ -29,6 +51,7 @@
     public int ID { get; set; }
 
     Expense expense = new Expense() { Date = DateTime.Now };
+    bool showDeleteVerify = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -47,5 +70,33 @@
 
         navigationManager.NavigateTo($"/expenses/view/{expense.Id}");
         StateHasChanged();
+    }
+
+    private void ShowDeleteVerify()
+    {
+        showDeleteVerify = true;
+    }
+
+    private void CancelDeleteVerify()
+    {
+        showDeleteVerify = false;
+    }
+
+    private void OnDeleteExpense()
+    {
+        dataService.Instance.Expenses.Remove(expense);
+
+        expense = new();
+
+        dataService.SaveData();
+
+        navigationManager.NavigateTo($"/expenses/");
+
+        StateHasChanged();
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/expenses/");
     }
 }

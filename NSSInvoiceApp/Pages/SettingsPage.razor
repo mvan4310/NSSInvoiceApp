@@ -16,7 +16,10 @@
 
 @code {
 
-
+    protected override async Task OnParametersSetAsync()
+    {
+        dataService.Title = "Settings";
+    }
 
     private void DarkModeChanged(bool value)
     {
