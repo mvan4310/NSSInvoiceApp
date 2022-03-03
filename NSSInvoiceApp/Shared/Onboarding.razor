@@ -1,5 +1,60 @@
-﻿<h3>Onboarding</h3>
+﻿@inject DataService dataService;
+
+@if (Visible)
+{
+    <MudPaper Style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;">
+        @if (beginPage)
+        {
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h1">Welcome to Invoisee</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>A free and open-source app to help you manage invoices and expenses.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.Restore" Style="width:50%;" Class="ml-auto" OnClick="@OnRestoreBackupClicked">Restore Backup</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Icon="@Icons.Material.Filled.Start" Style="width:50%;" OnClick="@OnBeginClicked" Class="ml-auto">Begin</MudIconButton>
+                    </MudButtonGroup>
+                </MudCardActions>
+            </MudCard>
+        }
+        else if (companyPage)
+        {
+        }
+        else if (iconsPage)
+        {
+        }
+        else if (backupsPage)
+        {
+        }
+        else if (basicsPage)
+        {
+        }
+    </MudPaper>
+}
 
 @code {
+    [Parameter]
+    public bool Visible { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+
+    bool beginPage = true;
+    bool companyPage = true;
+    bool iconsPage = true;
+    bool backupsPage = true;
+    bool basicsPage = true;
+
+    private void OnRestoreBackupClicked()
+    {
+    }
+
+    private void OnBeginClicked()
+    {
+    }
 }

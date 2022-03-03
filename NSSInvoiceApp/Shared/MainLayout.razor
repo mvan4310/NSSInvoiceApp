@@ -6,6 +6,8 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+ <AddItemMenu @bind-Visible="@showAddMenu" />
+
 <MudSwipeArea OnSwipe="@OnSwipe" Style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;">
     <div class="page">
         <MudLayout Style="height:100%;">
@@ -18,15 +20,16 @@
             </MudAppBar>
             <MudDrawer @bind-Open="@open" Elevation="1">
                 <MudDrawerHeader>
-                    <MudText Typo="Typo.h6">Invoisee</MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">Invoisee</MudText>
+                    <MudDivider />
                 </MudDrawerHeader>
                 <MudNavMenu Bordered="true" Color="Color.Info">
-                    <MudNavLink Match="NavLinkMatch.All" Href="/">Home</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/invoices">Invoices</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/expenses">Expenses</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/customers">Customers</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Filled.Home" Href="/">Home</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Filled.Folder" Href="/invoices">Invoices</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Filled.Money" Href="/expenses">Expenses</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Filled.People" Href="/customers">Customers</MudNavLink>
                     <MudDivider />
-                    <MudNavLink Match="NavLinkMatch.All" Href="/settings">Settings</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Icon="@Icons.Filled.Settings" Href="/settings">Settings</MudNavLink>
                 </MudNavMenu>
             </MudDrawer>
             <MudMainContent Class="pt-16">
@@ -40,6 +43,7 @@
 
 @code {
     bool open = false;
+    bool showAddMenu = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -68,7 +72,8 @@
 
     private void OpenDialog()
     {
-        dialogService.Show<NewItemDialog>("Add Item");
+        //dialogService.Show<NewItemDialog>("Add Item");
+        showAddMenu = true;
     }
 
     public void OnSwipe(SwipeDirection direction)

@@ -11,6 +11,13 @@ public class MainActivity : MauiAppCompatActivity
 	{
 		base.OnCreate(savedInstanceState);
 		Window.SetStatusBarColor(Android.Graphics.Color.Argb(255, 39, 39, 47));
+		Platform.Init(this, savedInstanceState);
+	}
 
+	public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
+	{
+		Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
 }

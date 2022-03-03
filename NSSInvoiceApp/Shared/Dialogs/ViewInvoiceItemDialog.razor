@@ -4,37 +4,32 @@
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Add Invoice Item</MudText>
+                    <MudText Typo="Typo.h6">View Invoice Item</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelClicked" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
-                <EditForm Model="@InvoiceItem" OnValidSubmit="AddClicked">
-                    <DataAnnotationsValidator />
-
-                    <MudGrid>
+                <MudGrid>
                         <MudItem xs="12" sm="7">
                             <MudCard>
                                 <MudCardContent>
-                                    <MudTextField @bind-Value="@InvoiceItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                    <MudTextField Value="@InvoiceItem.Description" ReadOnly="true" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                                     <br />
-                                    <MudTextField @bind-Value="@InvoiceItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                                    <MudTextField Value="@InvoiceItem.Price" ReadOnly="true" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
                                     <br />
-                                    <MudNumericField @bind-Value="@InvoiceItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
+                                    <MudNumericField Value="@InvoiceItem.Quantity" ReadOnly="true" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
                                     <br />
-                                    <MudCheckBox @bind-Checked="@InvoiceItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
+                                    <MudCheckBox Checked="@InvoiceItem.IsTax" ReadOnly="true" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
                                 </MudCardContent>
                             </MudCard>
                         </MudItem>
                     </MudGrid>
-                </EditForm>
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" OnClick="@CancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:50%;" OnClick="@AddClicked" Class="ml-auto">Save Item</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" OnClick="@CancelClicked">Cancel</MudButton>
                 </MudButtonGroup>
                 
             </MudCardActions>
@@ -56,15 +51,7 @@
     public EventCallback<InvoiceItem> InvoiceItemChanged { get; set; }
 
     [Parameter]
-    public EventCallback OnAdded { get; set; }
-
-    [Parameter]
     public EventCallback OnCancel { get; set; }
-
-    private async void AddClicked()
-    {
-        await OnAdded.InvokeAsync();
-    }
 
     private async void CancelClicked()
     {

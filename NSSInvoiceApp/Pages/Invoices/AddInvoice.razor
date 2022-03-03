@@ -8,106 +8,12 @@
 
 @if (showDeleteItemVerify)
 {
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Delete Item?</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>This action is not reversible.</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
+    <DeleteDialog Title="Delete Item?" Body="This action is not reversible." OnCancel="@CancelDeleteVerify" OnDelete="@OnItemDeleted" />
 }
 
-@if (showEditInvoiceDialog)
-{
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Edit Invoice Item</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <EditForm Model="@existingItem" OnValidSubmit="OnItemEdited">
-                    <DataAnnotationsValidator />
+<EditInvoiceItemDialog @bind-Visible="@showEditInvoiceDialog" @bind-InvoiceItem="@existingItem" OnEdited="@OnItemEdited" OnDelete="@ShowDeleteItemVerify" OnCancel="@CancelItemDialog" />
 
-                    <MudGrid>
-                        <MudItem xs="12" sm="7">
-                            <MudCard>
-                                <MudCardContent>
-                                    <MudTextField @bind-Value="@existingItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                    <br />
-                                    <MudTextField @bind-Value="@existingItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                    <br />
-                                    <MudNumericField @bind-Value="@existingItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                    <br />
-                                    <MudCheckBox @bind-Checked="@existingItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                    </MudGrid>
-                </EditForm>
-            </MudCardContent>
-            <MudCardActions>
-                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteItemVerify" />
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemEdited" Class="ml-auto">Save</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
-}
-
-@if (showAddInvoiceDialog)
-{
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Add Invoice Item</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <EditForm Model="@newItem" OnValidSubmit="OnItemAdded">
-                    <DataAnnotationsValidator />
-
-                    <MudGrid>
-                        <MudItem xs="12" sm="7">
-                            <MudCard>
-                                <MudCardContent>
-                                    <MudTextField @bind-Value="@newItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                    <br />
-                                    <MudTextField @bind-Value="@newItem.Price" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                    <br />
-                                    <MudNumericField @bind-Value="@newItem.Quantity" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                    <br />
-                                    <MudCheckBox @bind-Checked="@newItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                    </MudGrid>
-                </EditForm>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@CancelItemDialog">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnItemAdded" Class="ml-auto">Save Item</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
-}
+<AddInvoiceItemDialog @bind-Visible="@showAddInvoiceDialog" @bind-InvoiceItem="@newItem" OnAdded="@OnItemAdded" OnCancel="@CancelItemDialog" />
 
 <EditForm Model="@invoice" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -136,14 +42,18 @@
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
                             <Column T="InvoiceItem" Field="Quantity" />
-                            <Column T="InvoiceItem" Field="Price" />
+                            <Column T="InvoiceItem" Field="Price" Context="con">
+                                <CellTemplate>
+                                    <MudText>@con.Price.ToString("C")</MudText>
+                                </CellTemplate>
+                            </Column>
                             <Column T="InvoiceItem" Field="IsTax" />
                         </Columns>
                     </MudDataGrid>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:100%;" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:100%;">Save Invoice</MudButton>
                     </MudButtonGroup>
                 </MudCardActions>

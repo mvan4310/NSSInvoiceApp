@@ -32,10 +32,10 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" OnClick="@OnEditClicked">Edit</MudButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
                     </MudButtonGroup>
-                    
+
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -62,7 +62,11 @@
                                     <MudText>@con.Date.ToShortDateString()</MudText>
                                 </CellTemplate>
                             </Column>
-                            <Column T="Invoice" Field="TotalAmount" Title="Amount" />
+                            <Column T="Invoice" Field="TotalAmount" Title="Amount" Context="con">
+                                <CellTemplate>
+                                    <MudText>@con.TotalAmount.ToString("C")</MudText>
+                                </CellTemplate>
+                            </Column>
                             <Column T="Invoice" Field="ReceivedPayment" Title="Paid?" />
                         </Columns>
                         <PagerContent>

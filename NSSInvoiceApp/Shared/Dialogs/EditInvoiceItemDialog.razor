@@ -4,14 +4,14 @@
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Add Invoice Item</MudText>
+                    <MudText Typo="Typo.h6">Edit Invoice Item</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelClicked" />
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
-                <EditForm Model="@InvoiceItem" OnValidSubmit="AddClicked">
+                <EditForm Model="@InvoiceItem" OnValidSubmit="@EditedClicked">
                     <DataAnnotationsValidator />
 
                     <MudGrid>
@@ -33,8 +33,9 @@
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" OnClick="@CancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:50%;" OnClick="@AddClicked" Class="ml-auto">Save Item</MudButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Delete" OnClick="@DeleteClicked" />
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:33%;" OnClick="@CancelClicked">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:33%;" OnClick="@EditedClicked" Class="ml-auto">Save Item</MudButton>
                 </MudButtonGroup>
                 
             </MudCardActions>
@@ -56,18 +57,26 @@
     public EventCallback<InvoiceItem> InvoiceItemChanged { get; set; }
 
     [Parameter]
-    public EventCallback OnAdded { get; set; }
+    public EventCallback OnEdited { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
-    private async void AddClicked()
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+
+    private async void EditedClicked()
     {
-        await OnAdded.InvokeAsync();
+        await OnEdited.InvokeAsync();
     }
 
     private async void CancelClicked()
     {
         await OnCancel.InvokeAsync();
+    }
+
+    private async void DeleteClicked()
+    {
+        await OnDelete.InvokeAsync();
     }
 }

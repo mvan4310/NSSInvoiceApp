@@ -14,8 +14,8 @@
                 <MudField Label="Date" Variant="Variant.Outlined">@expense.Date.ToShortDateString()</MudField>
             </MudCardContent>
             <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@OnEditClicked">Edit</MudButton>
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
             </MudCardActions>
         </MudCard>
     </MudItem>

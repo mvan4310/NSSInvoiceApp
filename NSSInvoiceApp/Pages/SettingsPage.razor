@@ -6,20 +6,31 @@
 @inject IDialogService dialogService
 @using System.Text.Json
 
+<ConfirmDialog @bind-Visible="@showConfirmExport" Title="Backup Data?" Body="Are you sure you want to make a backup to the Downloads folder?" OnConfirm="OnExport" OnCancel="CancelExportVerify" />
+<ConfirmDialog @bind-Visible="@showConfirmImport" Title="Restore Data?" Body="Restore data from data.json in Downloads Folder? This will overwrite ALL data. Any data newer than backup will be lost." OnConfirm="OnImport" OnCancel="CancelImportVerify" />
+
 <MudLayout>
     <MudList Clickable="true">
-        <MudSwitch Checked="@dataService.Instance.EnableDarkMode" Label="Enable Dark Mode" Color="Color.Primary" T="bool" CheckedChanged="@DarkModeChanged" />
-        <br />
-        <br />
-        <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="ml-auto" Style="width:100%;" OnClick="@OnDetailsClicked">Edit Company Details</MudButton>
-        <br />
-        <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Save" OnClick="OnExport" />
-        <br />
-        <MudListItem Text="Import Saved Data" Disabled="true" Icon="@Icons.Material.Filled.ImportExport"  />
+        @if (dataService.Instance.EnableDarkMode)
+        {
+            <MudListItem Text="Enable Dark Mode" Disabled="false" Icon="@Icons.Material.Filled.CheckBox" IconColor="Color.Primary" OnClick="@DarkModeChanged" />
+        }
+        else
+        {
+            <MudListItem Text="Enable Dark Mode" Disabled="false" Icon="@Icons.Material.Outlined.CheckBoxOutlineBlank" IconColor="Color.Primary" OnClick="@DarkModeChanged" />
+        }
+        <MudDivider />
+        <MudListItem Text="Edit Company Details" Disabled="false" Icon="@Icons.Material.Filled.Business" OnClick="@OnDetailsClicked" />
+        <MudDivider />
+        <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Backup" OnClick="ShowExportVerify" />
+        <MudDivider />
+        <MudListItem Text="Restore Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Restore" OnClick="ShowImportVerify" />
     </MudList>
 </MudLayout>
 
 @code {
+    bool showConfirmExport = false;
+    bool showConfirmImport = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -27,11 +38,11 @@
         StateHasChanged();
     }
 
-    private void DarkModeChanged(bool value)
+    private void DarkModeChanged()
     {
         dataService.Instance.LastUpdated = DateTime.Now.ToString();
-        dataService.Instance.EnableDarkMode = value;
-        
+        dataService.Instance.EnableDarkMode = !dataService.Instance.EnableDarkMode;
+
         dataService.SaveData();
         StateHasChanged();
 
@@ -45,32 +56,175 @@
         navigationManager.NavigateTo($"/settings/company/");
     }
 
-    private void OnExport()
+    private void CancelExportVerify()
     {
-        string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-        string savePath = Path.Combine(rootPath, "data.json");
-        try
+        showConfirmExport = false;
+        StateHasChanged();
+    }
+
+    private void ShowExportVerify()
+    {
+        showConfirmExport = true;
+        StateHasChanged();
+    }
+
+    private void CancelImportVerify()
+    {
+        showConfirmImport = false;
+        StateHasChanged();
+    }
+
+    private void ShowImportVerify()
+    {
+        showConfirmImport = true;
+        StateHasChanged();
+    }
+
+    private async void OnImport()
+    {
+        showConfirmImport = false;
+
+        var status = await Permissions.RequestAsync<Permissions.StorageRead>();
+        if (status == PermissionStatus.Granted)
         {
-            var _data = JsonSerializer.Serialize(dataService.Instance);
-            File.CreateText(savePath).Dispose();
-            using (TextWriter writer = new StreamWriter(savePath, false))
+            status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            if (status == PermissionStatus.Granted)
             {
-                    writer.WriteLine(_data);
-                    writer.Close();
+                string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                string savePath = Path.Combine(rootPath, "data.json");
+                try
+                {
+                    if (File.Exists(savePath))
+                    {
+                        using (TextReader reader = new StreamReader(savePath))
+                        {
+                            string _data = reader.ReadToEnd();
+                            reader.Close();
+
+                            var _loadedData = JsonSerializer.Deserialize<UserData>(_data);
+                            dataService.Instance = _loadedData;
+                            dataService.SaveData();
+                            Snackbar.Add("Restore Successfully", Severity.Success);
+                        }
+                    }
+                    else
+                    {
+                        Snackbar.Add("There is no file named 'data.json' in the Downloads folder.", Severity.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        Snackbar.Add(ex.InnerException.Message, Severity.Error);
+                    }
+                    else
+                    {
+                        Snackbar.Add(ex.Message, Severity.Error);
+                    }
+                }
             }
-            Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
         }
-        catch (Exception ex)
+        StateHasChanged();
+    }
+
+    private async void OnExport()
+    {
+        showConfirmExport = false;
+
+        var status = await Permissions.RequestAsync<Permissions.StorageRead>();
+        if (status == PermissionStatus.Granted)
         {
-            if (ex.InnerException != null)
+            status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            if (status == PermissionStatus.Granted)
             {
-                Snackbar.Add(ex.InnerException.Message, Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add(ex.Message, Severity.Error);
+                string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                string savePath = Path.Combine(rootPath, "data.json");
+                try
+                {
+                    var _data = JsonSerializer.Serialize(dataService.Instance);
+                    int backupNum = 1;
+                    if (File.Exists(savePath))
+                    {
+                        while (File.Exists(savePath) && backupNum < 50)
+                        {
+                            savePath = Path.Combine(rootPath, "data" + backupNum + ".json");
+                            backupNum++;
+                        }
+
+                        File.CreateText(savePath).Dispose();
+                        using (TextWriter writer = new StreamWriter(savePath, false))
+                        {
+                            writer.WriteLine(_data);
+                            writer.Close();
+                        }
+                        Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
+                    }
+                    else
+                    {
+                        File.CreateText(savePath).Dispose();
+                        using (TextWriter writer = new StreamWriter(savePath, false))
+                        {
+                            writer.WriteLine(_data);
+                            writer.Close();
+                        }
+                        Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        Snackbar.Add(ex.InnerException.Message, Severity.Error);
+                    }
+                    else
+                    {
+                        Snackbar.Add(ex.Message, Severity.Error);
+                    }
+                }
             }
         }
+        StateHasChanged();
+    }
+
+    public async Task<PermissionStatus> CheckAndRequestStoragePermission()
+    {
+        var status = await Permissions.CheckStatusAsync<Permissions.StorageWrite>();
+        if (status == PermissionStatus.Granted)
+            return status;
+        if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
+        {
+            // Prompt the user to turn on in settings
+            // On iOS once a permission has been denied it may not be requested again from the application
+            return status;
+        }
+        if (Permissions.ShouldShowRationale<Permissions.StorageWrite>())
+        {
+            // Prompt the user with additional information as to why the permission is needed
+        }
+        status = await Permissions.RequestAsync<Permissions.StorageWrite>();
+
+        return status;
+    }
+
+    public async Task<PermissionStatus> CheckAndRequestStorageReadPermission()
+    {
+        var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
+        if (status == PermissionStatus.Granted)
+            return status;
+        if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
+        {
+            // Prompt the user to turn on in settings
+            // On iOS once a permission has been denied it may not be requested again from the application
+            return status;
+        }
+        if (Permissions.ShouldShowRationale<Permissions.StorageRead>())
+        {
+            // Prompt the user with additional information as to why the permission is needed
+        }
+        status = await Permissions.RequestAsync<Permissions.StorageRead>();
+
+        return status;
     }
 
     public class ThemeDetails

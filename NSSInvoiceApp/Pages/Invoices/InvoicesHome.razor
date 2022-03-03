@@ -5,11 +5,11 @@
 
 <br />
 
-<MudPaper >
-    <MudDataGrid @ref="@grid" MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged" >
+<MudPaper>
+    <MudDataGrid @ref="@grid" MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged">
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
-                AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
             <Column T="Invoice" Field="Date" Context="con">
@@ -18,7 +18,11 @@
                 </CellTemplate>
             </Column>
             <Column T="Invoice" Field="Customer" />
-            <Column T="Invoice" Field="TotalAmount" Title="Amount" />
+            <Column T="Invoice" Field="TotalAmount" Title="Amount" Context="con">
+                <CellTemplate>
+                    <MudText>@con.TotalAmount.ToString("C")</MudText>
+                </CellTemplate>
+            </Column>
             <Column T="Invoice" Field="ReceivedPayment" Title="Paid?" CellStyleFunc="@_cellStyleFunc" />
         </Columns>
         <PagerContent>
@@ -81,6 +85,6 @@
         string style = "";
 
         if (!x.ReceivedPayment)
-            style += "background-color:#880E4F";        return style;
+            style += "background-color:#880E4F"; return style;
     };
 }

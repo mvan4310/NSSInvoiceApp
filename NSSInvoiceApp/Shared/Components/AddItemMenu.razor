@@ -1,0 +1,63 @@
+﻿@inject NavigationManager navigationManager
+
+@if (Visible)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardContent>
+                <MudList Clickable="true">
+                    <MudListItem Text="New Invoice" Disabled="false" Icon="@Icons.Material.Filled.AddBusiness" OnClick="@NewInvoice" />
+                    <MudDivider />
+                    <MudListItem Text="New Expense" Disabled="false" Icon="@Icons.Material.Filled.Money" OnClick="NewExpense" />
+                    <MudDivider />
+                    <MudListItem Text="New Customer" Disabled="false" Icon="@Icons.Material.Filled.PersonAdd" OnClick="NewCustomer" />
+                </MudList>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:100%;" Class="ml-auto" OnClick="@CancelVerify">Cancel</MudButton>
+                </MudButtonGroup>
+
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
+
+@code {
+    [Parameter]
+    public bool Visible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    async void NewInvoice()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync();
+        navigationManager.NavigateTo("/invoices/add");
+    }
+
+    async void NewExpense()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync();
+        navigationManager.NavigateTo("/expenses/add");
+    }
+
+    async void NewCustomer()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync();
+        navigationManager.NavigateTo("/customers/add");
+    }
+
+    private async void CancelVerify()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync();
+        await OnCancel.InvokeAsync();
+    }
+}

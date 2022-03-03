@@ -8,22 +8,7 @@
 
 @if (showDeleteVerify)
 {
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Delete Customer?</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>This will remove all related invoices as well. This action is not reversible. Do not do this if you need the invoice data.</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnDeleteCustomer" Class="ml-auto">Delete</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
+    <DeleteDialog Title="Delete Customer?" Body="This will remove all related invoices as well. This action is not reversible. Do not do this if you need the invoice data." OnCancel="@CancelDeleteVerify" OnDelete="@OnDeleteCustomer" />
 }
 
 <EditForm Model="@customer" OnValidSubmit="OnValidSubmit">

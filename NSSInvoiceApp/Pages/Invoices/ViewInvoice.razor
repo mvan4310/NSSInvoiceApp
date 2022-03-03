@@ -3,41 +3,7 @@
 @inject ISnackbar snackbar
 @inject NavigationManager navigationManager
 
-@if (showEditInvoiceDialog)
-{
-    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">View Invoice Item</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelItemDialog" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudGrid>
-                    <MudItem xs="12" sm="7">
-                        <MudCard>
-                            <MudCardContent>
-                                <MudTextField @bind-Value="@existingItem.Description" ReadOnly="true" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-                                <br />
-                                <MudTextField @bind-Value="@existingItem.Price" ReadOnly="true" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
-                                <br />
-                                <MudNumericField @bind-Value="@existingItem.Quantity" ReadOnly="true" T="int" Label="Quantity" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
-                                <br />
-                                <MudCheckBox @bind-Checked="@existingItem.IsTax" ReadOnly="true" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                </MudGrid>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelItemDialog">Close</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
-}
+<ViewInvoiceItemDialog @bind-Visible="@showEditInvoiceDialog" @bind-InvoiceItem="@existingItem" OnCancel="@CancelItemDialog" />
 
 <MudGrid>
     @if (!invoice.ReceivedPayment)
@@ -64,16 +30,20 @@
                     <Columns>
                         <Column T="InvoiceItem" Field="Description" />
                         <Column T="InvoiceItem" Field="Quantity" />
-                        <Column T="InvoiceItem" Field="Price" />
+                        <Column T="InvoiceItem" Field="Price" Context="con">
+                            <CellTemplate>
+                                <MudText>@con.Price.ToString("C")</MudText>
+                            </CellTemplate>
+                        </Column>
                         <Column T="InvoiceItem" Field="IsTax" Title="Tax?" />
                     </Columns>
                 </MudDataGrid>
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" Style="width:100%;" OnClick="@OnSendClicked">Send...</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:100%;" OnClick="@OnEditClicked">Edit</MudButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Email" OnClick="@OnSendClicked"></MudIconButton>
                 </MudButtonGroup>
             </MudCardActions>
         </MudCard>
