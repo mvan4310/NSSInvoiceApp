@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject DataService dataService;
 @inject ISnackbar snackbar
+@inject NavigationManager navigationManager
 
 <MudCard>
     <MudCardHeader>
@@ -20,7 +21,7 @@
 
 <br />
 <MudPaper>
-    <MudDataGrid MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" Sortable="true" Filterable="true">
+    <MudDataGrid @ref="@gridInvoice" MultiSelection="false" Breakpoint="Breakpoint.None" T="Invoice" Items="@invoices" Sortable="true" Filterable="true" SelectedItemChanged="@InvoiceSelectionChanged">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Last 5 Invoices</MudText>
         </ToolBarContent>
@@ -39,7 +40,7 @@
 
 <br />
 <MudPaper>
-    <MudDataGrid MultiSelection="false" Breakpoint="Breakpoint.None" Items="@expenses" Sortable="true" Filterable="true">
+    <MudDataGrid @ref="@gridExpense" MultiSelection="false" T="Expense" Breakpoint="Breakpoint.None" Items="@expenses" Sortable="true" Filterable="true" SelectedItemChanged="@ExpenseSelectionChanged">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Last 5 Expenses</MudText>
         </ToolBarContent>
@@ -66,10 +67,13 @@
     private string _searchString;
     private string _chartTotal = "$0.00";
 
+    MudDataGrid<Invoice> gridInvoice;
+    MudDataGrid<Expense> gridExpense;
+
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Home";
-
+        dataService.UpdateTitle.Invoke("Home");
+        StateHasChanged();
         try
         {
             await Task.Run(() => LoadPageDetails().ConfigureAwait(false));
@@ -110,4 +114,32 @@
         if (!x.ReceivedPayment)
             style += "background-color:#880E4F"; return style;
     };
+
+    void InvoiceSelectionChanged(Invoice args)
+    {
+        if (gridInvoice.SelectedItem != null)
+        {
+            OnInvoiceTapped(args);
+        }
+    }
+
+    private void OnInvoiceTapped(Invoice item)
+    {
+        navigationManager.NavigateTo($"/invoices/view/{item.Id}");
+        StateHasChanged();
+    }
+
+    void ExpenseSelectionChanged(Expense args)
+    {
+        if (gridExpense.SelectedItem != null)
+        {
+            OnExpenseTapped(args);
+        }
+    }
+
+    private void OnExpenseTapped(Expense item)
+    {
+        navigationManager.NavigateTo($"/expenses/view/{item.Id}");
+        StateHasChanged();
+    }
 }

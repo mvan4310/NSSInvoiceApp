@@ -16,7 +16,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudText >This will remove all related invoices as well. This action is not reversible. Do not do this if you need the invoice data.</MudText>
+                <MudText>This will remove all related invoices as well. This action is not reversible. Do not do this if you need the invoice data.</MudText>
             </MudCardContent>
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
@@ -46,9 +46,11 @@
                     <MudTextField @bind-Value="@customer.Phone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Customer</MudButton>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:33%;" OnClick="@OnCancelClicked">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:33%;">Save</MudButton>
+                    </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -64,7 +66,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Edit Customer";
+        dataService.UpdateTitle.Invoke("Edit Customer");
         customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
     }
 

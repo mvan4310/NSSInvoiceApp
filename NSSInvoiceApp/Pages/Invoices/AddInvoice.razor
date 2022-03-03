@@ -16,7 +16,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudText >This action is not reversible.</MudText>
+                <MudText>This action is not reversible.</MudText>
             </MudCardContent>
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
@@ -142,8 +142,10 @@
                     </MudDataGrid>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save Invoice</MudButton>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:100%;">Save Invoice</MudButton>
+                    </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -165,7 +167,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Add New Invoice";
+        dataService.UpdateTitle.Invoke("Add Invoice");
         invoice.InvoiceNumber = dataService.Instance.Invoices.Select(a => a.InvoiceNumber).DefaultIfEmpty(0).Max() + 1;
         customers = dataService.Instance.Customers.OrderBy(a => a.Name).ToList();
     }

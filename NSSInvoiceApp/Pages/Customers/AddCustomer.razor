@@ -38,7 +38,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Add Customer";
+        dataService.UpdateTitle.Invoke("Add Customer");
     }
 
     private void OnValidSubmit(EditContext context)

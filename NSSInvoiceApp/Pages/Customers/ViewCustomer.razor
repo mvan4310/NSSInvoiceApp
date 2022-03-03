@@ -31,8 +31,11 @@
                     <MudField Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense">@customer.Phone</MudField>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@OnEditClicked">Edit</MudButton>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" OnClick="@OnCancelClicked">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" OnClick="@OnEditClicked">Edit</MudButton>
+                    </MudButtonGroup>
+                    
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -84,7 +87,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "View Customer";
+        dataService.UpdateTitle.Invoke("View Customer");
         customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
         invoices = dataService.Instance.Invoices.Where(a => a.CustomerId == customer.Id).ToList();
     }

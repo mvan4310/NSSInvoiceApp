@@ -28,7 +28,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Customers";
+        dataService.UpdateTitle.Invoke("Customers");
 
         try
         {

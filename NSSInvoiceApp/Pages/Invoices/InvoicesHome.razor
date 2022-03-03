@@ -35,7 +35,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Invoices";
+        dataService.UpdateTitle.Invoke("Invoices");
 
         try
         {

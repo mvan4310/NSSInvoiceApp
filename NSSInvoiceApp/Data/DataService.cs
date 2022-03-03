@@ -14,6 +14,7 @@ namespace NSSInvoiceApp.Data
     public class DataService
     {
         public string Title = "Home";
+        public Action<string> UpdateTitle;
 
         private static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "data.json");
         //private static string exportPath = Path.Combine(Android.Content.Context.GetExternalFilesDir("PRIVATE_EXTERNAL_STORAGE/Download").AbsolutePath.ToString(), "data.json");

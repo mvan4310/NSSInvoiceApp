@@ -16,7 +16,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudText >This action is not reversible.</MudText>
+                <MudText>This action is not reversible.</MudText>
             </MudCardContent>
             <MudCardActions>
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
@@ -36,11 +36,14 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudText >This will remove all invoice items as well. This action is not reversible.</MudText>
+                <MudText>This will remove all invoice items as well. This action is not reversible.</MudText>
             </MudCardContent>
             <MudCardActions>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnDeleteInvoice" Class="ml-auto">Delete</MudButton>
+                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:100%;" OnClick="@CancelDeleteVerify">Cancel</MudButton>
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Style="width:100%;" OnClick="@OnDeleteInvoice" Class="ml-auto">Delete</MudButton>
+                </MudButtonGroup>
+
             </MudCardActions>
         </MudCard>
     </MudOverlay>
@@ -152,7 +155,7 @@
                     <br />
                     <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
                     <br />
-                    <MudDataGrid @ref="@grid" Items="@InvoiceItems" Breakpoint="Breakpoint.None" T="InvoiceItem" SelectedItemChanged="@SelectionChanged" >
+                    <MudDataGrid @ref="@grid" Items="@InvoiceItems" Breakpoint="Breakpoint.None" T="InvoiceItem" SelectedItemChanged="@SelectionChanged">
                         <Columns>
                             <Column T="InvoiceItem" Field="Description" />
                             <Column T="InvoiceItem" Field="Quantity" />
@@ -162,10 +165,12 @@
                     </MudDataGrid>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@OnCancelClicked">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" OnClick="@ShowItemDialog">Add Item</MudButton>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:25%;" OnClick="@OnCancelClicked">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" Style="width:25%;" OnClick="@ShowItemDialog">Add Item</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:25%;">Save</MudButton>
+                    </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -190,7 +195,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Edit Invoice";
+        dataService.UpdateTitle.Invoke("Edit Invoice");
         invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID);
         InvoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
         customers = dataService.Instance.Customers.OrderBy(a => a.Name).ToList();
@@ -334,7 +339,7 @@
         StateHasChanged();
     }
 
-     void SelectionChanged(InvoiceItem args)
+    void SelectionChanged(InvoiceItem args)
     {
         if (grid.SelectedItem != null)
         {

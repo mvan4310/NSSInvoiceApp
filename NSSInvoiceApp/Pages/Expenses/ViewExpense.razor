@@ -29,7 +29,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "View Expense";
+        dataService.UpdateTitle.Invoke("View Expense");
         expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID);
     }
 

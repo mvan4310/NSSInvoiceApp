@@ -23,7 +23,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        dataService.Title = "Settings";
+        dataService.UpdateTitle.Invoke("Settings");
+        StateHasChanged();
     }
 
     private void DarkModeChanged(bool value)
