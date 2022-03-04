@@ -22,7 +22,7 @@
 
 <EditForm Model="@invoice" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
@@ -61,7 +61,7 @@
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Dark" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Add" OnClick="@ShowItemDialog"></MudIconButton>
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:25%;" OnClick="@OnValidSubmit" Icon="@Icons.Filled.Save"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Save"></MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
@@ -97,7 +97,7 @@
 
     private void OnCancelClicked()
     {
-        navigationManager.NavigateTo($"/invoices/");
+        navigationManager.NavigateTo($"/invoices/view/{invoice.Id}");
     }
 
     private void OnValidSubmit()

@@ -17,7 +17,7 @@
 
 <EditForm Model="@invoice" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
@@ -31,9 +31,9 @@
                         }
                     </MudSelect>
                     <br />
-                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" Date="@invoice.Date" />
                     <br />
-                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" />
+                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" Date="@invoice.DueDate" />
                     <br />
                     <br />
                     <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
@@ -90,6 +90,19 @@
             snackbar.Add("Must have at least one item on the invoice to submit.", Severity.Error);
             return;
         }
+
+        if (invoice.Date == DateTime.MinValue)
+        {
+            snackbar.Add("Must have a valid date.", Severity.Error);
+            return;
+        }
+
+        if (invoice.DueDate == DateTime.MinValue)
+        {
+            snackbar.Add("Must have a valid due date.", Severity.Error);
+            return;
+        }
+
         invoice.Id = dataService.Instance.Invoices.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
         invoice.CustomerId = dataService.Instance.Customers.First(a => a.Name == invoice.Customer).Id;
 

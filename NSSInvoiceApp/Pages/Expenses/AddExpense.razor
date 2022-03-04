@@ -8,7 +8,7 @@
 
 <EditForm Model="@expense" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
@@ -17,7 +17,7 @@
                     <br />
                     <MudTextField @bind-Value="@expense.TotalAmount" T="double" Label="Amount" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
                     <br />
-                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@expense.Date" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@expense.Date" Date="@expense.Date" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">

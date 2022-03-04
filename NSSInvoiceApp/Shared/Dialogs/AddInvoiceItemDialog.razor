@@ -13,9 +13,9 @@
             <MudCardContent>
                 <EditForm Model="@InvoiceItem" OnValidSubmit="AddClicked">
                     <DataAnnotationsValidator />
-
+                    <ValidationSummary />
                     <MudGrid>
-                        <MudItem xs="12" sm="7">
+                        <MudItem xs="12" sm="12">
                             <MudCard>
                                 <MudCardContent>
                                     <MudTextField @bind-Value="@InvoiceItem.Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
@@ -26,18 +26,19 @@
                                     <br />
                                     <MudCheckBox @bind-Checked="@InvoiceItem.IsTax" T="bool" Label="Sales Tax?" Color="Color.Primary"></MudCheckBox>
                                 </MudCardContent>
+                                <MudCardActions>
+                                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelClicked"></MudIconButton>
+                                        <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Save"></MudIconButton>
+                                    </MudButtonGroup>
+
+                                </MudCardActions>
                             </MudCard>
                         </MudItem>
                     </MudGrid>
                 </EditForm>
             </MudCardContent>
-            <MudCardActions>
-                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelClicked"></MudIconButton>
-                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:50%;" OnClick="@AddClicked" Icon="@Icons.Filled.Save"></MudIconButton>
-                </MudButtonGroup>
-                
-            </MudCardActions>
+
         </MudCard>
     </MudOverlay>
 }

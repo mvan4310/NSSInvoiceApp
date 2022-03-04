@@ -13,9 +13,9 @@
 
 <EditForm Model="@customer" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
-        <MudItem xs="12" sm="7">
+        <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
                     <MudTextField @bind-Value="@customer.Name" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
@@ -93,13 +93,13 @@
 
         dataService.SaveData();
 
-        navigationManager.NavigateTo($"/customers/");
+        navigationManager.NavigateTo($"/customers/view/{customer.Id}");
 
         StateHasChanged();
     }
 
     private void OnCancelClicked()
     {
-        navigationManager.NavigateTo($"/customers/");
+        navigationManager.NavigateTo($"/customers/view/{customer.Id}");
     }
 }

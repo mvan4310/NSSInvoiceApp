@@ -37,7 +37,7 @@
         {
             <EditForm Model="@dataService.Instance" OnValidSubmit="OnCompanySaveClicked">
                 <DataAnnotationsValidator />
-                <ValidationSummary />  
+                <ValidationSummary />
                 <MudGrid>
                     <MudItem xs="12" sm="12">
                         <MudCard>
@@ -134,7 +134,7 @@
                     <MudList>
                         <MudListItem Text="Tapping invoices and other items in lists will display more information" Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
                         <MudListItem Text="Ensure to tap the save button before leaving a screen. Some data saves automatically, but tapping the button ensures the data is saved properly." Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
-                        <MudListItem Text="This app does not collect any device, personal, or other information and no features are pay-locked." Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
+                        <MudListItem Text="This app does not collect any device, personal, or other information." Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
                     </MudList>
                 </MudCardContent>
                 <MudCardActions>
@@ -168,26 +168,25 @@
         Microsoft.Maui.Graphics.IImage image;
         try
         {
-            //Assembly assembly = GetType().GetTypeInfo().Assembly;
-            //using (Stream stream = assembly.GetManifestResourceStream("NSSInvoiceApp.Resources.Images.iconui.png"))
-            //{
-            //    image = PlatformImage.FromStream(stream);
-            //    img = image.AsBase64();
-            //    img = string.Format("data:image/png;base64, {0}", img);
-            //}
-            using var stream = await FileSystem.OpenAppPackageFileAsync("iconui.png");
-            image = PlatformImage.FromStream(stream);
-            img = image.AsBase64();
-            img = string.Format("data:image/png;base64, {0}", img);
+            if (dataService.Instance.EnableDarkMode)
+            {
+                using var stream = await FileSystem.OpenAppPackageFileAsync("iconui.png");
+                image = PlatformImage.FromStream(stream);
+                img = image.AsBase64();
+                img = string.Format("data:image/png;base64, {0}", img);
+            }
+            else
+            {
+                using var stream = await FileSystem.OpenAppPackageFileAsync("iconlightui.png");
+                image = PlatformImage.FromStream(stream);
+                img = image.AsBase64();
+                img = string.Format("data:image/png;base64, {0}", img);
+            }
         }
         catch (Exception ex)
         {
             var msg = ex.Message;
         }
-        //Assembly assembly = GetType().GetTypeInfo().Assembly;
-        //using (Stream stream = await FileSystem.OpenAppPackageFileAsync("icon.png"))//NSSInvoiceApp.Resources.
-        //{
-        //}
 
         await InvokeAsync(StateHasChanged);
     }

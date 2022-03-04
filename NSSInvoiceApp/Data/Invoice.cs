@@ -19,15 +19,19 @@ namespace NSSInvoiceApp.Data
         [Required]
         public DateTime Date { get; set; }
 
-        [Required]
+        
         public int CustomerId { get; set; }
+
+        [Required]
+        [StringLength(120, MinimumLength = 1)]
+        [Display(Name = "Customer")]
         public string Customer { get; set; }
 
 
         [Required]
+        [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 
-        [Required]
         public double TotalAmount { get; set; }
         public bool ReceivedPayment { get; set; }
         public DateTime DateReceived { get; set; }

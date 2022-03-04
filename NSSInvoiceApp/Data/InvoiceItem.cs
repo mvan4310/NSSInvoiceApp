@@ -16,6 +16,7 @@ namespace NSSInvoiceApp.Data
         public int InvoiceId { get; set; }
 
         [Required]
+        [StringLength(120, MinimumLength = 5)]
         public string Description { get; set; }
 
         [Required]
@@ -26,6 +27,7 @@ namespace NSSInvoiceApp.Data
 
         [Required]
         public bool IsTax { get; set; } = false;
+
 
         public double TotalPrice { get; set; }
     }

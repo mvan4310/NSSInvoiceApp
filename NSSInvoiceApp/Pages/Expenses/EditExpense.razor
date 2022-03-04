@@ -10,7 +10,7 @@
 
 <EditForm Model="@expense" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
@@ -84,6 +84,6 @@
 
     private void OnCancelClicked()
     {
-        navigationManager.NavigateTo($"/expenses/");
+        navigationManager.NavigateTo($"/expenses/view/{expense.Id}");
     }
 }

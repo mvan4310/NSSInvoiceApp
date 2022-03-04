@@ -54,6 +54,14 @@
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningKeyStore>..\key.keystore</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>passhere</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>invoiceapp</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>passhere</AndroidSigningKeyPass>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
 		<OutputType>WinExe</OutputType>
 		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
@@ -88,7 +96,7 @@
 	    <Color>#27272F</Color>
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="Resources\Images\iconlightui.png">
+	  <None Update="Resources\Raw\iconlightui.png">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
@@ -98,6 +106,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Include="Resources\Raw\iconlightui.png" />
 	  <MauiImage Include="Resources\Raw\iconui.png" />
 	</ItemGroup>
 

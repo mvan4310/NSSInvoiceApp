@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.Maui.Graphics.Platform
+@inherits LayoutComponentBase
 @inject IDialogService dialogService
 @inject DataService dataService
 @inject NavigationManager navigationManager
@@ -21,7 +22,7 @@
             </MudAppBar>
             <MudDrawer @bind-Open="@open" Elevation="1">
                 <MudDrawerHeader>
-                    <MudText Typo="Typo.h4" Align="Align.Center">Invoisee</MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center"><MudImage Src="@img" Style="width:40%;" />Invoisee</MudText>
                     <MudDivider />
                 </MudDrawerHeader>
                 <MudNavMenu Bordered="true" Color="Color.Info">
@@ -46,8 +47,9 @@
     bool open = false;
     bool showAddMenu = false;
     bool showOnboarding = false;
+    string img = "";
 
-    protected override Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         if (dataService.Instance == null)
         {
@@ -68,8 +70,30 @@
             navigationManager.NavigateTo($"/onboard/");
         }
 
+        Microsoft.Maui.Graphics.IImage image;
+        try
+        {
+            if (dataService.Instance.EnableDarkMode)
+            {
+                using var stream = await FileSystem.OpenAppPackageFileAsync("iconui.png");
+                image = PlatformImage.FromStream(stream);
+                img = image.AsBase64();
+                img = string.Format("data:image/png;base64, {0}", img);
+            }
+            else
+            {
+                using var stream = await FileSystem.OpenAppPackageFileAsync("iconlightui.png");
+                image = PlatformImage.FromStream(stream);
+                img = image.AsBase64();
+                img = string.Format("data:image/png;base64, {0}", img);
+            }
+        }
+        catch (Exception ex)
+        {
+            var msg = ex.Message;
+        }
+
         StateHasChanged();
-        return base.OnInitializedAsync();
     }
 
     void ToggleDrawer()
