@@ -15,7 +15,7 @@ namespace NSSInvoiceApp.Data
         public string LastUpdated { get; set; } = DateTime.MinValue.ToString();
         public bool EnableDarkMode { get; set; } = true;
 
-        public string CompanyName { get; set; } = "Test Company";
+        public string CompanyName { get; set; } = "";
         public string CompanyAddress { get; set; } = "";
         public string CompanyCityState { get; set; } = "";
         public string CompanyZip { get; set; } = "";

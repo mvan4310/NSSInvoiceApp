@@ -1,60 +1,281 @@
-﻿@inject DataService dataService;
+﻿@page "/onboard"
+
+@inject DataService dataService;
+@inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
+@using System.Text.Json
 
 @if (Visible)
 {
     <MudPaper Style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;">
+        <br />
+        <br />
+        <br />
+        <br />
         @if (beginPage)
         {
             <MudCard>
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h1">Welcome to Invoisee</MudText>
+                        <MudText Typo="Typo.h6" Align="Align.Center">Welcome to Invoisee</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
+                    <MudIcon Size="Size.Large" Style="width:100%;" Icon="@Icons.Material.Filled.Edit" />
                     <MudText>A free and open-source app to help you manage invoices and expenses.</MudText>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.Restore" Style="width:50%;" Class="ml-auto" OnClick="@OnRestoreBackupClicked">Restore Backup</MudIconButton>
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Icon="@Icons.Material.Filled.Start" Style="width:50%;" OnClick="@OnBeginClicked" Class="ml-auto">Begin</MudIconButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Restore" Style="width:50%;" Class="ml-auto" OnClick="@OnRestoreBackupClicked">Restore Backup</MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Start" Style="width:50%;" OnClick="@OnBeginClicked" Class="ml-auto">Begin</MudButton>
                     </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
         }
         else if (companyPage)
         {
+            <EditForm Model="@dataService.Instance" OnValidSubmit="OnCompanySaveClicked">
+                <DataAnnotationsValidator />
+                <MudGrid>
+                    <MudItem xs="12" sm="12">
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6" Align="Align.Center">Company Information</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyName" Label="Name" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <br />
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyAddress" Label="Address" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <br />
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyCityState" Label="City, State" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <br />
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyZip" Label="Zip Code" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <br />
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyEmail" Label="Email" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                                <br />
+                                <MudTextField @bind-Value="@dataService.Instance.CompanyPhone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCompanyCancelClicked"></MudIconButton>
+                                <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Save">Save and Continue</MudIconButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
         }
         else if (iconsPage)
         {
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6" Align="Align.Center">Common Icon Information</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText>Below are common icons you will see across the app, and what they mean:</MudText>
+                    <MudList>
+                        <MudListItem Text="Go Back / Cancel" Icon="@Icons.Filled.ArrowBack" IconColor="Color.Info" />
+                        <MudListItem Text="Save" Icon="@Icons.Filled.Save" IconColor="Color.Info" />
+                        <MudListItem Text="Delete" Icon="@Icons.Filled.Delete" IconColor="Color.Info" />
+                        <MudListItem Text="Continue / Next Screen" Icon="@Icons.Filled.NavigateNext" IconColor="Color.Info" />
+                        <MudListItem Text="Edit Details" Icon="@Icons.Filled.Edit" IconColor="Color.Info" />
+                        <MudListItem Text="Backup" Icon="@Icons.Filled.Backup" IconColor="Color.Info" />
+                        <MudListItem Text="Restore" Icon="@Icons.Filled.Restore" IconColor="Color.Info" />
+                        <MudListItem Text="Email / Send" Icon="@Icons.Filled.Email" IconColor="Color.Info" />
+                    </MudList>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnIconCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.NavigateNext" Style="width:50%;" OnClick="@OnIconContClicked" Class="ml-auto">Continue</MudIconButton>
+                    </MudButtonGroup>
+                </MudCardActions>
+            </MudCard>
         }
         else if (backupsPage)
         {
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6" Align="Align.Center">Backups</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Restore" />
+                    <MudText>Backups are an important thing to keep in mind. Without proper backups, you may lose invoice, customer, or expense data saved in the app. Please make sure to perform regular backups through the Settings Menu:</MudText>
+                    <MudDivider />
+                    <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Backup" />
+                    <MudDivider />
+                    <MudText>Backups are saved in the Downloads folder, and named 'data.json'. Backup data is unencrypted and can be read by anyone with access. To restore a backup, place the file in the Downloads folder with the same name before using the option on the Settings Menu.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnBackupCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.NavigateNext" Style="width:50%;" OnClick="@OnBackupContClicked" Class="ml-auto">Continue</MudIconButton>
+                    </MudButtonGroup>
+                </MudCardActions>
+            </MudCard>
         }
         else if (basicsPage)
         {
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6" Align="Align.Center">Other Information</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudList>
+                        <MudListItem Text="Tapping invoices and other items in lists will display more information" Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
+                        <MudListItem Text="Ensure to tap the save button before leaving a screen. Some data saves automatically, but tapping the button ensures the data is saved properly." Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
+                        <MudListItem Text="This app does not collect any device, personal, or other information and no features are pay-locked." Icon="@Icons.Filled.FormatListBulleted" IconColor="Color.Primary" />
+                    </MudList>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnFinishedCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.Done" Style="width:50%;" OnClick="@OnFinishedClicked" Class="ml-auto">Finish</MudIconButton>
+                    </MudButtonGroup>
+                </MudCardActions>
+            </MudCard>
         }
     </MudPaper>
 }
 
 @code {
     [Parameter]
-    public bool Visible { get; set; }
+    public bool Visible { get; set; } = true;
 
     [Parameter]
     public EventCallback<bool> VisibleChanged { get; set; }
 
     bool beginPage = true;
-    bool companyPage = true;
-    bool iconsPage = true;
-    bool backupsPage = true;
-    bool basicsPage = true;
+    bool companyPage = false;
+    bool iconsPage = false;
+    bool backupsPage = false;
+    bool basicsPage = false;
 
-    private void OnRestoreBackupClicked()
+    private async void OnRestoreBackupClicked()
     {
+        try
+        {
+            var options = new PickOptions
+                {
+                    PickerTitle = "Please choose backup file"
+                };
+            var file = await ChooseRestoreFile(options);
+
+            //return so we dont get an error in the snackbar if the file is null due to them cancelling
+            if (file == null)
+            {
+                return;
+            }
+
+            using (TextReader reader = new StreamReader(await file.OpenReadAsync()))
+            {
+                string _data = reader.ReadToEnd();
+                reader.Close();
+
+                var _loadedData = JsonSerializer.Deserialize<UserData>(_data);
+                dataService.Instance = _loadedData;
+                dataService.SaveData();
+                Snackbar.Add("Restore Successfully", Severity.Success);
+            }
+
+            navigationManager.NavigateTo($"/");
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                Snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+        
+        StateHasChanged();
+    }
+
+    async Task<FileResult> ChooseRestoreFile(PickOptions options)
+    {
+        try
+        {
+            var result = await FilePicker.PickAsync(options);
+            if (result != null)
+            {
+                //Text = $"File Name: {result.FileName}";
+                //if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
+                //    result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var stream = await result.OpenReadAsync();
+                //    Image = ImageSource.FromStream(() => stream);
+                //}
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            // The user canceled or something went wrong
+        }
+        return null;
     }
 
     private void OnBeginClicked()
     {
+        beginPage = false;
+        iconsPage = true;
+    }
+
+    private void OnCompanySaveClicked()
+    {
+        companyPage = false;
+        backupsPage = true;
+    }
+
+    private void OnIconContClicked()
+    {
+        iconsPage = false;
+        companyPage = true;
+    }
+
+    private void OnBackupContClicked()
+    {
+        backupsPage = false;
+        basicsPage = true;
+    }
+
+    private async void OnFinishedClicked()
+    {
+        navigationManager.NavigateTo($"/");
+    }
+
+    private void OnIconCancelClicked()
+    {
+        beginPage = true;
+        iconsPage = false;
+    }
+
+    private void OnBackupCancelClicked()
+    {
+        backupsPage = false;
+        companyPage = true;
+    }
+
+    private void OnFinishedCancelClicked()
+    {
+        basicsPage = false;
+        backupsPage = true;
+    }
+
+    private void OnCompanyCancelClicked()
+    {
+        iconsPage = true;
+        companyPage = false;
     }
 }

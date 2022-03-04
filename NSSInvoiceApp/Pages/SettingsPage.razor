@@ -84,48 +84,69 @@
     {
         showConfirmImport = false;
 
-        var status = await Permissions.RequestAsync<Permissions.StorageRead>();
-        if (status == PermissionStatus.Granted)
+        try
         {
-            status = await Permissions.RequestAsync<Permissions.StorageWrite>();
-            if (status == PermissionStatus.Granted)
-            {
-                string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                string savePath = Path.Combine(rootPath, "data.json");
-                try
+            var options = new PickOptions
                 {
-                    if (File.Exists(savePath))
-                    {
-                        using (TextReader reader = new StreamReader(savePath))
-                        {
-                            string _data = reader.ReadToEnd();
-                            reader.Close();
+                    PickerTitle = "Please choose backup file"
+                };
+            var file = await ChooseRestoreFile(options);
 
-                            var _loadedData = JsonSerializer.Deserialize<UserData>(_data);
-                            dataService.Instance = _loadedData;
-                            dataService.SaveData();
-                            Snackbar.Add("Restore Successfully", Severity.Success);
-                        }
-                    }
-                    else
-                    {
-                        Snackbar.Add("There is no file named 'data.json' in the Downloads folder.", Severity.Error);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex.InnerException != null)
-                    {
-                        Snackbar.Add(ex.InnerException.Message, Severity.Error);
-                    }
-                    else
-                    {
-                        Snackbar.Add(ex.Message, Severity.Error);
-                    }
-                }
+            //return so we dont get an error in the snackbar if the file is null due to them cancelling
+            if (file == null)
+            {
+                return;
+            }
+
+            using (TextReader reader = new StreamReader(await file.OpenReadAsync()))
+            {
+                string _data = reader.ReadToEnd();
+                reader.Close();
+
+                var _loadedData = JsonSerializer.Deserialize<UserData>(_data);
+                dataService.Instance = _loadedData;
+                dataService.SaveData();
+                Snackbar.Add("Restore Successfully", Severity.Success);
             }
         }
+        catch (Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                Snackbar.Add(ex.InnerException.Message, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+        
         StateHasChanged();
+        StateHasChanged();
+    }
+
+    async Task<FileResult> ChooseRestoreFile(PickOptions options)
+    {
+        try
+        {
+            var result = await FilePicker.PickAsync(options);
+            if (result != null)
+            {
+                //Text = $"File Name: {result.FileName}";
+                //if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
+                //    result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var stream = await result.OpenReadAsync();
+                //    Image = ImageSource.FromStream(() => stream);
+                //}
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            // The user canceled or something went wrong
+        }
+        return null;
     }
 
     private async void OnExport()

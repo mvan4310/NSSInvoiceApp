@@ -249,7 +249,7 @@ namespace NSSInvoiceApp.Data
                     worksheet.Range["A15:E15"].CellStyle.Color = Syncfusion.Drawing.Color.FromArgb(0, 42, 118, 189);
 
                     //Apply alignment to cells with product details
-                    worksheet.Range["A15"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignLeft;
+                    worksheet.Range["A15"].CellStyle.HorizontalAlignment = Syncfusion.XlsIO.ExcelHAlign.HAlignLeft;
                     worksheet.Range["C15:C22"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
                     worksheet.Range["D15:E15"].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
 
@@ -274,10 +274,11 @@ namespace NSSInvoiceApp.Data
                     ms.Position = 0;
 
                     //Initialize XlsIO renderer.
-                    //XlsIORenderer renderer = new XlsIORenderer(); // We get an issue with trying to convert from Excel to PDF due to a mismatch in SkiaSharp with Syncfusion and native version
+                    XlsIORenderer renderer = new XlsIORenderer();
 
                     //Initialize PDF document
-                    //PdfDocument pdfDocument = renderer.ConvertToPDF(workbook);
+                    PdfDocument pdfDocument = renderer.ConvertToPDF(workbook); //Still getting a crash here
+                    pdfDocument.Save(ms);
 
                     File.Create(savePath).Dispose();
                     using (MemoryStream tempStream = new MemoryStream())

@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IDialogService dialogService
 @inject DataService dataService
+@inject NavigationManager navigationManager
 
 <MudThemeProvider @bind-IsDarkMode="@dataService.Instance.EnableDarkMode" />
 <MudDialogProvider />
@@ -44,6 +45,7 @@
 @code {
     bool open = false;
     bool showAddMenu = false;
+    bool showOnboarding = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -61,6 +63,12 @@
         }
         dataService.UpdateTitle = OnTitleChanged;
         dataService.ToggleSidebar = ToggleDrawer;
+        if (dataService.Instance.CompanyName.Length < 1)
+        {
+            navigationManager.NavigateTo($"/onboard/");
+        }
+
+        StateHasChanged();
         return base.OnInitializedAsync();
     }
 
