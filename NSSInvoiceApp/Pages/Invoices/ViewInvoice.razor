@@ -12,7 +12,7 @@
             <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:100%;" OnClick="@OnPaidClicked">Mark As Paid</MudButton>
         </MudItem>
     }
-    <MudItem xs="12" sm="7">
+    <MudItem xs="12" sm="12">
         <MudCard>
             <MudCardContent>
                 <MudField Label="Number" Variant="Variant.Outlined">@invoice.InvoiceNumber</MudField>
@@ -41,7 +41,7 @@
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
                     <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
                     <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Email" OnClick="@OnSendClicked"></MudIconButton>
                 </MudButtonGroup>
@@ -73,8 +73,14 @@
     private async void OnSendClicked()
     {
         var customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == invoice.CustomerId);
-        DataService.ConvertInvoiceToPDF(invoice, InvoiceItems, customer, dataService.Instance);
-        await DataService.SendEmail("Invoice #" + invoice.InvoiceNumber.ToString() + " from " + dataService.Instance.CompanyName, "");
+        var path = await DataService.ConvertInvoiceToPDF(invoice, InvoiceItems, customer, dataService.Instance);
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            snackbar.Add("The file may already exist, or another issue has occurred.", Severity.Warning);
+            return;
+        }
+        await DataService.SendEmail("Invoice #" + invoice.InvoiceNumber.ToString() + " from " + dataService.Instance.CompanyName, "", path);
+        snackbar.Add("Invoice sent successfully. Invoice also saved to downloads folder.", Severity.Success);
     }
 
     private void OnCancelClicked()

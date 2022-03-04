@@ -12,7 +12,7 @@
             </MudCardHeader>
             <MudCardContent>
                 <MudGrid>
-                        <MudItem xs="12" sm="7">
+                        <MudItem xs="12" sm="12">
                             <MudCard>
                                 <MudCardContent>
                                     <MudTextField Value="@InvoiceItem.Description" ReadOnly="true" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
@@ -29,7 +29,7 @@
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" OnClick="@CancelClicked">Cancel</MudButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:100%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelClicked"></MudIconButton>
                 </MudButtonGroup>
                 
             </MudCardActions>

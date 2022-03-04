@@ -12,8 +12,8 @@
             </MudCardContent>
             <MudCardActions>
                 <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:50%;" Class="ml-auto" OnClick="@CancelVerify">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Style="width:50%;" OnClick="@OnItemConfirmed" Class="ml-auto">Confirm</MudButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelVerify"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:50%;" OnClick="@OnItemConfirmed" Icon="@Icons.Filled.Check"></MudIconButton>
                 </MudButtonGroup>
 
             </MudCardActions>

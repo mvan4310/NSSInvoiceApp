@@ -4,6 +4,7 @@
 @inject NavigationManager navigationManager
 @inject ISnackbar Snackbar
 @using System.Text.Json
+@using Microsoft.Maui.Graphics.Platform
 
 @if (Visible)
 {
@@ -17,12 +18,12 @@
             <MudCard>
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h6" Align="Align.Center">Welcome to Invoisee</MudText>
+                        <MudText Typo="Typo.h4" Align="Align.Center">Welcome to Invoisee</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudIcon Size="Size.Large" Style="width:100%;" Icon="@Icons.Material.Filled.Edit" />
-                    <MudText>A free and open-source app to help you manage invoices and expenses.</MudText>
+                    <MudImage Src="@img" Style="width:100%;" />
+                    <MudText Align="Align.Center">A free and open-source app to help you manage invoices and expenses.</MudText>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
@@ -36,6 +37,7 @@
         {
             <EditForm Model="@dataService.Instance" OnValidSubmit="OnCompanySaveClicked">
                 <DataAnnotationsValidator />
+                <ValidationSummary />  
                 <MudGrid>
                     <MudItem xs="12" sm="12">
                         <MudCard>
@@ -58,7 +60,7 @@
                                 <MudTextField @bind-Value="@dataService.Instance.CompanyPhone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                             </MudCardContent>
                             <MudCardActions>
-                                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCompanyCancelClicked"></MudIconButton>
+                                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCompanyCancelClicked"></MudIconButton>
                                 <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Save">Save and Continue</MudIconButton>
                             </MudCardActions>
                         </MudCard>
@@ -89,7 +91,7 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnIconCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnIconCancelClicked">Back</MudIconButton>
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.NavigateNext" Style="width:50%;" OnClick="@OnIconContClicked" Class="ml-auto">Continue</MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
@@ -104,16 +106,17 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Restore" />
+                    <MudText Align="Align.Center"><MudIcon Size="Size.Large" Icon="@Icons.Material.Filled.Restore" /></MudText>
                     <MudText>Backups are an important thing to keep in mind. Without proper backups, you may lose invoice, customer, or expense data saved in the app. Please make sure to perform regular backups through the Settings Menu:</MudText>
                     <MudDivider />
                     <MudListItem Text="Backup Saved Data" Disabled="false" Icon="@Icons.Material.Filled.Backup" />
                     <MudDivider />
-                    <MudText>Backups are saved in the Downloads folder, and named 'data.json'. Backup data is unencrypted and can be read by anyone with access. To restore a backup, place the file in the Downloads folder with the same name before using the option on the Settings Menu.</MudText>
+                    <br />
+                    <MudText>Backups are saved in the Downloads folder, and named data[n].json. Backup data is unencrypted and can be read by anyone with access. To restore a backup, use the option on the Settings Menu.</MudText>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnBackupCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnBackupCancelClicked">Back</MudIconButton>
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.NavigateNext" Style="width:50%;" OnClick="@OnBackupContClicked" Class="ml-auto">Continue</MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
@@ -136,7 +139,7 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnFinishedCancelClicked">Back</MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Icon="@Icons.Material.Filled.ArrowBack" Style="width:50%;" Class="ml-auto" OnClick="@OnFinishedCancelClicked">Back</MudIconButton>
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Icon="@Icons.Material.Filled.Done" Style="width:50%;" OnClick="@OnFinishedClicked" Class="ml-auto">Finish</MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
@@ -157,6 +160,37 @@
     bool iconsPage = false;
     bool backupsPage = false;
     bool basicsPage = false;
+
+    string img = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Microsoft.Maui.Graphics.IImage image;
+        try
+        {
+            //Assembly assembly = GetType().GetTypeInfo().Assembly;
+            //using (Stream stream = assembly.GetManifestResourceStream("NSSInvoiceApp.Resources.Images.iconui.png"))
+            //{
+            //    image = PlatformImage.FromStream(stream);
+            //    img = image.AsBase64();
+            //    img = string.Format("data:image/png;base64, {0}", img);
+            //}
+            using var stream = await FileSystem.OpenAppPackageFileAsync("iconui.png");
+            image = PlatformImage.FromStream(stream);
+            img = image.AsBase64();
+            img = string.Format("data:image/png;base64, {0}", img);
+        }
+        catch (Exception ex)
+        {
+            var msg = ex.Message;
+        }
+        //Assembly assembly = GetType().GetTypeInfo().Assembly;
+        //using (Stream stream = await FileSystem.OpenAppPackageFileAsync("icon.png"))//NSSInvoiceApp.Resources.
+        //{
+        //}
+
+        await InvokeAsync(StateHasChanged);
+    }
 
     private async void OnRestoreBackupClicked()
     {
@@ -198,7 +232,6 @@
                 Snackbar.Add(ex.Message, Severity.Error);
             }
         }
-        
         StateHasChanged();
     }
 
@@ -207,16 +240,7 @@
         try
         {
             var result = await FilePicker.PickAsync(options);
-            if (result != null)
-            {
-                //Text = $"File Name: {result.FileName}";
-                //if (result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) ||
-                //    result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase))
-                //{
-                //    var stream = await result.OpenReadAsync();
-                //    Image = ImageSource.FromStream(() => stream);
-                //}
-            }
+
             return result;
         }
         catch (Exception ex)

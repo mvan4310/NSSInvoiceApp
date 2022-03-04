@@ -73,12 +73,12 @@ namespace NSSInvoiceApp.Data
             }
         }
 
-        public static async Task SendEmail(string subject, string body)
+        public static async Task SendEmail(string subject, string body, string savePath)
         {
             try
             {
-                string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                string savePath = Path.Combine(rootPath, "invoice.xlsx");
+                //string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
+                //string savePath = Path.Combine(rootPath, "invoice.pdf");
 
                 var message = new EmailMessage
                 {
@@ -99,14 +99,14 @@ namespace NSSInvoiceApp.Data
             }
         }
 
-        public async static void ConvertInvoiceToPDF(Invoice invoice, List<InvoiceItem> invoiceItems, Customer customer, UserData userData)
+        public async static Task<string> ConvertInvoiceToPDF(Invoice invoice, List<InvoiceItem> invoiceItems, Customer customer, UserData userData)
         {
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 try
                 {
                     string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                    string savePath = Path.Combine(rootPath, "invoice.xlsx");
+                    string savePath = Path.Combine(rootPath, "invoice" + invoice.InvoiceNumber + ".pdf");
 
                     Invoice _invoice = invoice;
                     List<InvoiceItem> _invoiceItems = invoiceItems;
@@ -120,8 +120,12 @@ namespace NSSInvoiceApp.Data
                     //Access first worksheet from the workbook instance.
                     IWorksheet worksheet = workbook.Worksheets[0];
 
-                    //Disable gridlines in the worksheet
+                    //Disable gridlines in the worksheet and set margins
                     worksheet.IsGridLinesVisible = false;
+                    worksheet.PageSetup.RightMargin = 0.1;
+                    worksheet.PageSetup.LeftMargin = 0.1;
+                    worksheet.PageSetup.TopMargin = 0.1;
+                    worksheet.PageSetup.BottomMargin = 0.1;
 
                     //Enter values to the cells from A3 to A5
                     worksheet.Range["A3"].Text = userData.CompanyName;
@@ -269,30 +273,28 @@ namespace NSSInvoiceApp.Data
                     worksheet.Range["A15:A23"].RowHeight = 18;
 
 
-                    MemoryStream ms = new MemoryStream();
-                    workbook.SaveAs(ms);
-                    ms.Position = 0;
-
                     //Initialize XlsIO renderer.
                     XlsIORenderer renderer = new XlsIORenderer();
 
                     //Initialize PDF document
-                    PdfDocument pdfDocument = renderer.ConvertToPDF(workbook); //Still getting a crash here
-                    pdfDocument.Save(ms);
+                    PdfDocument pdfDocument = renderer.ConvertToPDF(workbook);
+                    PdfPageSettings pageSettings = new PdfPageSettings() {Orientation = PdfPageOrientation.Portrait, Size = PdfPageSize.Letter  };
+                    pdfDocument.PageSettings = pageSettings;
+                    pdfDocument.PageSettings.Margins.All = 0.5f;
 
                     File.Create(savePath).Dispose();
                     using (MemoryStream tempStream = new MemoryStream())
                     {
-                        ms.Position = 0;
-                        ms.CopyTo(tempStream);
+                        pdfDocument.Save(tempStream);
                         File.WriteAllBytes(savePath, tempStream.ToArray());
                     }
 
-                    ms.Dispose();
+                    return savePath;
                 }
                 catch (Exception ex)
                 {
                     var message = ex.Message;
+                    return "";
                 }
 
                 

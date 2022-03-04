@@ -6,6 +6,8 @@
 <br />
 
 <MudPaper>
+    <MudText Align="Align.Center">Tap an item to view</MudText>
+
     <MudDataGrid @ref="@grid" MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@SelectionChanged">
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"

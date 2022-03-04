@@ -4,7 +4,7 @@
 @inject NavigationManager navigationManager
 
 <MudGrid>
-    <MudItem xs="12" sm="7">
+    <MudItem xs="12" sm="12">
         <MudCard>
             <MudCardContent>
                 <MudField Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense">@expense.Name</MudField>
@@ -14,8 +14,10 @@
                 <MudField Label="Date" Variant="Variant.Outlined">@expense.Date.ToShortDateString()</MudField>
             </MudCardContent>
             <MudCardActions>
-                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
-                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
+                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Edit" OnClick="@OnEditClicked" />
+                </MudButtonGroup>
             </MudCardActions>
         </MudCard>
     </MudItem>

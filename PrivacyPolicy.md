@@ -1,0 +1,1 @@
+The Invoisee app developers do not collect or sell any information or data. 

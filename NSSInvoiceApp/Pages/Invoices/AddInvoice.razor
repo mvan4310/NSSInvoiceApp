@@ -19,7 +19,7 @@
     <DataAnnotationsValidator />
 
     <MudGrid>
-        <MudItem xs="12" sm="7">
+        <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
                     <MudNumericField @bind-Value="@invoice.InvoiceNumber" T="int" Label="Invoice Number" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
@@ -53,8 +53,9 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:100%;" OnClick="@ShowItemDialog">Add Invoice Item</MudButton>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:100%;">Save Invoice</MudButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Add" OnClick="@ShowItemDialog"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:33%;" Icon="@Icons.Filled.Save"></MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
             </MudCard>
@@ -194,5 +195,10 @@
         existingItem = new();
         grid.SelectedItem = null;
         StateHasChanged();
+    }
+
+    private void OnCancelClicked()
+    {
+        navigationManager.NavigateTo($"/invoices/");
     }
 }

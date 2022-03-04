@@ -1,22 +1,22 @@
 ﻿<MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@Title</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Body</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Style="width:50%;" Class="ml-auto" OnClick="@CancelDeleteVerify">Cancel</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Style="width:50%;" OnClick="@OnItemDeleted" Class="ml-auto">Delete</MudButton>
-                </MudButtonGroup>
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText>@Body</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelDeleteVerify"></MudIconButton>
+                <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Dark" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.Delete" OnClick="@OnItemDeleted" />
+            </MudButtonGroup>
 
-            </MudCardActions>
-        </MudCard>
-    </MudOverlay>
+        </MudCardActions>
+    </MudCard>
+</MudOverlay>
 
 @code {
     [Parameter]

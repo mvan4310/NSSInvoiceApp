@@ -24,7 +24,7 @@
     <DataAnnotationsValidator />
 
     <MudGrid>
-        <MudItem xs="12" sm="7">
+        <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
                     <MudNumericField @bind-Value="@invoice.InvoiceNumber" T="int" Label="Invoice Number" Margin="Margin.Dense" Variant="Variant.Outlined" HideSpinButtons="true" Step="1" />
@@ -36,9 +36,9 @@
                         }
                     </MudSelect>
                     <br />
-                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" />
+                    <MudDatePicker Label="Date" Variant="Variant.Outlined" @bind-Value="@invoice.Date" Date="@invoice.Date" />
                     <br />
-                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" />
+                    <MudDatePicker Label="Due Date" Variant="Variant.Outlined" @bind-Value="@invoice.DueDate" Date="@invoice.DueDate" />
                     <br />
                     <br />
                     <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
@@ -58,9 +58,9 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudButtonGroup OverrideStyles="false" Style="width:100%;">
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
-                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.AddToQueue" OnClick="@ShowItemDialog"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Dark" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Delete" OnClick="@ShowDeleteVerify" />
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:25%;" Icon="@Icons.Filled.Add" OnClick="@ShowItemDialog"></MudIconButton>
                         <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:25%;" OnClick="@OnValidSubmit" Icon="@Icons.Filled.Save"></MudIconButton>
                     </MudButtonGroup>
                 </MudCardActions>
