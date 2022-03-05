@@ -59,6 +59,8 @@ namespace NSSInvoiceApp.Data
         {
             try
             {
+                Instance.LastUpdated = DateTime.Now.ToString();
+
                 var _data = JsonSerializer.Serialize(Instance);
                 File.CreateText(dbPath).Dispose();
                 using (TextWriter writer = new StreamWriter(dbPath, false))
@@ -77,9 +79,6 @@ namespace NSSInvoiceApp.Data
         {
             try
             {
-                //string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                //string savePath = Path.Combine(rootPath, "invoice.pdf");
-
                 var message = new EmailMessage
                 {
                     Subject = subject,
@@ -99,6 +98,14 @@ namespace NSSInvoiceApp.Data
             }
         }
 
+        /// <summary>
+        /// Takes an invoice, creates an excel sheet from it, then converts it to pdf
+        /// </summary>
+        /// <param name="invoice"></param>
+        /// <param name="invoiceItems"></param>
+        /// <param name="customer"></param>
+        /// <param name="userData"></param>
+        /// <returns></returns>
         public async static Task<string> ConvertInvoiceToPDF(Invoice invoice, List<InvoiceItem> invoiceItems, Customer customer, UserData userData)
         {
             using (ExcelEngine excelEngine = new ExcelEngine())
@@ -297,11 +304,7 @@ namespace NSSInvoiceApp.Data
                     var message = ex.Message;
                     return "";
                 }
-
-                
             }
         }
-
-        
     }
 }
