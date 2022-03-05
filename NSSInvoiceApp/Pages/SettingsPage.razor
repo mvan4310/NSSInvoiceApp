@@ -40,7 +40,6 @@
 
     private void DarkModeChanged()
     {
-        dataService.Instance.LastUpdated = DateTime.Now.ToString();
         dataService.Instance.EnableDarkMode = !dataService.Instance.EnableDarkMode;
 
         dataService.SaveData();
@@ -122,7 +121,6 @@
         }
         
         StateHasChanged();
-        StateHasChanged();
     }
 
     async Task<FileResult> ChooseRestoreFile(PickOptions options)
@@ -140,6 +138,7 @@
         return null;
     }
 
+    // TODO Refactor this...
     private async void OnExport()
     {
         showConfirmExport = false;
@@ -238,15 +237,4 @@
 
         return status;
     }
-
-    public class ThemeDetails
-    {
-        public string ID { get; set; }
-        public string Text { get; set; }
-    }
-
-    private List<ThemeDetails> Themes = new List<ThemeDetails>() {
-        new ThemeDetails(){ ID = "material", Text = "Material" },
-        new ThemeDetails(){ ID = "material-dark", Text = "Material Dark" },
-    };
 }
