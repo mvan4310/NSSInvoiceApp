@@ -6,7 +6,7 @@
 
 <EditForm Model="@dataService.Instance" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-
+    <ValidationSummary />
     <MudGrid>
         <MudItem xs="12" sm="12">
             <MudCard>
@@ -32,7 +32,6 @@
 </EditForm>
 
 @code {
-
 
     protected override async Task OnParametersSetAsync()
     {

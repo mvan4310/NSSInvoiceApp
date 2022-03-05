@@ -52,7 +52,7 @@
     protected override async Task OnParametersSetAsync()
     {
         dataService.UpdateTitle.Invoke("Edit Customer");
-        customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID);
+        customer = dataService.Instance.Customers.FirstOrDefault(a => a.Id == ID).CloneCustomer();
     }
 
     private void OnValidSubmit(EditContext context)

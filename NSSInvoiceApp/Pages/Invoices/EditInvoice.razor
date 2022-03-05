@@ -88,8 +88,13 @@
     protected override async Task OnParametersSetAsync()
     {
         dataService.UpdateTitle.Invoke("Edit Invoice");
-        invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID);
-        InvoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
+        invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID).CloneInvoice();
+        var _invoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
+        foreach (var item in _invoiceItems)
+        {
+            InvoiceItems.Add(item.CloneInvoiceItem());
+        }
+
         customers = dataService.Instance.Customers.OrderBy(a => a.Name).ToList();
 
         await InvokeAsync(StateHasChanged);
@@ -107,21 +112,36 @@
             snackbar.Add("Must have at least one item on the invoice to save.", Severity.Error);
             return;
         }
-        invoice.Id = dataService.Instance.Invoices.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
-        invoice.CustomerId = dataService.Instance.Customers.First(a => a.Name == invoice.Customer).Id;
+        var _invoice = dataService.Instance.Invoices.FirstOrDefault(a => a.Id == ID);
+        var _invoiceItems = dataService.Instance.InvoiceItems.Where(a => a.InvoiceId == ID).ToList();
 
         int newestId = dataService.Instance.InvoiceItems.Select(a => a.Id).DefaultIfEmpty(0).Max() + 1;
         foreach (var item in InvoiceItems)
         {
-            item.InvoiceId = invoice.Id;
-            item.Id = newestId;
+            if (item.Id == 0)
+            {
+                item.TotalPrice = item.Price * item.Quantity;
+                item.Id = newestId;
+                newestId++;
 
-            dataService.Instance.InvoiceItems.Add(item);
+                item.InvoiceId = invoice.Id;
 
-            newestId++;
+                dataService.Instance.InvoiceItems.Add(item);
+            }
+            else
+            {
+                item.TotalPrice = item.Price * item.Quantity;
+
+                var _existing = dataService.Instance.InvoiceItems.FirstOrDefault(a => a.Id == item.Id);
+                _existing.Description = item.Description;
+                _existing.IsTax = item.IsTax;
+                _existing.Price = item.Price;
+                _existing.Quantity = item.Quantity;
+                _existing.TotalPrice = item.TotalPrice;
+
+            }
         }
 
-        dataService.Instance.Invoices.Add(invoice);
         dataService.SaveData();
 
         navigationManager.NavigateTo($"/invoices/view/{invoice.Id}");

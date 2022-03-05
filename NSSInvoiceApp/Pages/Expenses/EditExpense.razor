@@ -43,7 +43,7 @@
     protected override async Task OnParametersSetAsync()
     {
         dataService.UpdateTitle.Invoke("Edit Expense");
-        expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID);
+        expense = dataService.Instance.Expenses.FirstOrDefault(a => a.Id == ID).CloneExpense();
     }
 
     private void OnValidSubmit(EditContext context)

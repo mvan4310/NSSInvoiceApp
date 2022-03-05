@@ -204,16 +204,17 @@ namespace NSSInvoiceApp.Data
                     foreach (var item in invoiceItems)
                     {
                         worksheet.Range["A" + start].Text = item.Description;
-                        worksheet.Range["C" + start].Number = item.Quantity;
-                        worksheet.Range["D" + start].Number = item.Price;
+                        worksheet.Range["C" + start].Text = item.Quantity.ToString("C");
+                        worksheet.Range["D" + start].Text = item.Price.ToString("C");
+                        worksheet.Range["E" + start].Text = (item.Quantity * item.Price).ToString("C");
 
                         start++;
                     }
                     worksheet.Range["D23"].Text = "Total";
 
                     //Apply number format
-                    worksheet.Range["D16:E22"].NumberFormat = "$.00";
-                    worksheet.Range["E23"].NumberFormat = "$.00";
+                    //worksheet.Range["D16:E22"].NumberFormat = "$.00";
+                    //worksheet.Range["E23"].NumberFormat = "$.00";
 
                     //Merge column A and B from row 15 to 22
                     worksheet.Range["A15:B15"].Merge();
@@ -226,11 +227,11 @@ namespace NSSInvoiceApp.Data
                     worksheet.Range["A22:B22"].Merge();
 
                     //Apply incremental formula for column Amount by multiplying Qty and UnitPrice
-                    application.EnableIncrementalFormula = true;
-                    worksheet.Range["E16:E20"].Formula = "=C16*D16";
+                    //application.EnableIncrementalFormula = true;
+                    //worksheet.Range["E21"].Text = "=C16*D16";
 
                     //Formula for Sum the total
-                    worksheet.Range["E23"].Formula = "=SUM(E16:E22)";
+                    worksheet.Range["E23"].Text = invoice.TotalAmount.ToString("C");
 
                     //Apply borders
                     worksheet.Range["A16:E22"].CellStyle.Borders[ExcelBordersIndex.EdgeTop].LineStyle = ExcelLineStyle.Thin;
@@ -300,5 +301,7 @@ namespace NSSInvoiceApp.Data
                 
             }
         }
+
+        
     }
 }
