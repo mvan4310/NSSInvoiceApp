@@ -17,7 +17,6 @@ namespace NSSInvoiceApp.Data
         public Action<string> UpdateTitle;
 
         private static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "data.json");
-        //private static string exportPath = Path.Combine(Android.Content.Context.GetExternalFilesDir("PRIVATE_EXTERNAL_STORAGE/Download").AbsolutePath.ToString(), "data.json");
 
         public Action ToggleSidebar;
 
@@ -112,8 +111,8 @@ namespace NSSInvoiceApp.Data
             {
                 try
                 {
-                    string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                    string savePath = Path.Combine(rootPath, "invoice" + invoice.InvoiceNumber + ".pdf");
+                    //string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads); //This feller isnt needed, since we use the cache directory to store these temp
+                    string savePath = Path.Combine(FileSystem.CacheDirectory, "invoice" + invoice.InvoiceNumber + ".pdf");
 
                     Invoice _invoice = invoice;
                     List<InvoiceItem> _invoiceItems = invoiceItems;
