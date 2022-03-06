@@ -119,7 +119,6 @@
                 Snackbar.Add(ex.Message, Severity.Error);
             }
         }
-        
         StateHasChanged();
     }
 
@@ -149,8 +148,7 @@
             status = await Permissions.RequestAsync<Permissions.StorageWrite>();
             if (status == PermissionStatus.Granted)
             {
-                string rootPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, Android.OS.Environment.DirectoryDownloads);
-                string savePath = Path.Combine(rootPath, "data.json");
+                string savePath = Path.Combine(FileSystem.CacheDirectory, "invoiseebackup.json");
                 try
                 {
                     var _data = JsonSerializer.Serialize(dataService.Instance);
@@ -159,7 +157,7 @@
                     {
                         while (File.Exists(savePath) && backupNum < 50)
                         {
-                            savePath = Path.Combine(rootPath, "data" + backupNum + ".json");
+                            savePath = Path.Combine(FileSystem.CacheDirectory, "invoiseebackup" + backupNum + ".json");
                             backupNum++;
                         }
 
@@ -169,7 +167,14 @@
                             writer.WriteLine(_data);
                             writer.Close();
                         }
-                        Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
+
+                        await Share.RequestAsync(new ShareFileRequest
+                            {
+                                Title = "Backup Data",
+                                File = new ShareFile(savePath)
+                            });
+
+                        //Snackbar.Add("Exported Successfully", Severity.Success);
                     }
                     else
                     {
@@ -179,7 +184,14 @@
                             writer.WriteLine(_data);
                             writer.Close();
                         }
-                        Snackbar.Add("Exported to Downloads Folder Successfully", Severity.Success);
+
+                        await Share.RequestAsync(new ShareFileRequest
+                            {
+                                Title = "Backup Data",
+                                File = new ShareFile(savePath)
+                            });
+
+                        //Snackbar.Add("Exported Successfully", Severity.Success);
                     }
                 }
                 catch (Exception ex)
