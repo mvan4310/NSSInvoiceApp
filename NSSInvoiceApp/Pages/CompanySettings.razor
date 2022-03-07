@@ -24,7 +24,11 @@
                     <MudTextField @bind-Value="@dataService.Instance.CompanyPhone" Label="Phone Number" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:100%;" Icon="@Icons.Filled.Save"></MudIconButton>
+                    <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                        <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@OnCancelClicked"></MudIconButton>
+                        <MudIconButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto" Style="width:100%;" Icon="@Icons.Filled.Save"></MudIconButton>
+                    </MudButtonGroup>
+                    
                 </MudCardActions>
             </MudCard>
         </MudItem>
