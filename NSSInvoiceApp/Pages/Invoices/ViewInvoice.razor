@@ -23,6 +23,12 @@
                 <br />
                 <MudField Variant="Variant.Outlined" Label="Due Date">@invoice.DueDate.ToShortDateString()</MudField>
                 <br />
+                <MudField Variant="Variant.Outlined" Label="Total">@invoice.TotalAmount.ToString("C")</MudField>
+                <br />
+                <MudField Variant="Variant.Outlined" Label="Paid">@invoice.ReceivedPayment.ToString()</MudField>
+                <br />
+                <MudField Variant="Variant.Outlined" Label="Date Paid">@invoice.DateReceived.ToShortDateString()</MudField>
+                <br />
                 <br />
                 <MudText Style="width:100%;" Typo="Typo.h6" Align="Align.Center">Invoice Items</MudText>
                 <br />

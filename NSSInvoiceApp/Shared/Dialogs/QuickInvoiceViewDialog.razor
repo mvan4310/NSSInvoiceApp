@@ -1,5 +1,75 @@
-﻿<h3>QuickInvoiceViewDialog</h3>
+﻿@inject NavigationManager navigationManager
+
+@if (Visible)
+{
+    <MudOverlay Visible="true" DarkBackground="true" AutoClose="false">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quick View Invoice</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@CancelClicked" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="12">
+                        <MudCard>
+                            <MudCardContent>
+                                <MudField Label="Number" Variant="Variant.Outlined">@Invoice.InvoiceNumber</MudField>
+                                <br />
+                                <MudField Label="Customer" Variant="Variant.Outlined">@Invoice.Customer</MudField>
+                                <br />
+                                <MudField Variant="Variant.Outlined" Label="Date">@Invoice.Date.ToShortDateString()</MudField>
+                                <br />
+                                <MudField Variant="Variant.Outlined" Label="Due Date">@Invoice.DueDate.ToShortDateString()</MudField>
+                                <br />
+                                <MudField Variant="Variant.Outlined" Label="Total">@Invoice.TotalAmount.ToString("C")</MudField>
+                                <br />
+                                <MudField Variant="Variant.Outlined" Label="Paid">@Invoice.ReceivedPayment.ToString()</MudField>
+                                <br />
+                                <MudField Variant="Variant.Outlined" Label="Date Paid">@Invoice.DateReceived.ToShortDateString()</MudField>
+                                <br />
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButtonGroup OverrideStyles="false" Style="width:100%;">
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.ArrowBack" OnClick="@CancelClicked"></MudIconButton>
+                    <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" Class="ml-auto" Style="width:50%;" Icon="@Icons.Filled.SubdirectoryArrowRight" OnClick="@OnViewClicked"></MudIconButton>
+                </MudButtonGroup>
+
+            </MudCardActions>
+        </MudCard>
+    </MudOverlay>
+}
 
 @code {
+    [Parameter]
+    public bool Visible { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+
+    [Parameter]
+    public Invoice Invoice { get; set; }
+
+    [Parameter]
+    public EventCallback<Invoice> InvoiceChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private async void CancelClicked()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private void OnViewClicked()
+    {
+        navigationManager.NavigateTo($"/invoices/view/{Invoice.Id}");
+    }
 }

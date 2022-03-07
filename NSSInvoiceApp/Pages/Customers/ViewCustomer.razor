@@ -42,6 +42,7 @@
     }
     else
     {
+        <QuickInvoiceViewDialog @bind-Visible="@showInvoice" Invoice="@selectedInvoice" OnCancel="@OnInvoiceClosed" />
         <MudItem xs="12" sm="12" md="12">
             <MudButtonGroup OverrideStyles="false" Style="width:100%;">
                 <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="ml-auto" Style="width:100%;" OnClick="@OnInfoClicked">Info</MudButton>
@@ -51,7 +52,7 @@
         <MudItem xs="12" sm="12">
             <MudCard>
                 <MudCardContent>
-                    <MudDataGrid MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true">
+                    <MudDataGrid MultiSelection="false" Breakpoint="Breakpoint.None" Items="@invoices" T="Invoice" Sortable="true" Filterable="true" SelectedItemChanged="@OnInvoiceClicked">
                         <ToolBarContent>
                             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -87,6 +88,10 @@
     List<Invoice> invoices = new();
     bool showInfoTab = true;
     bool showInvoicesTab = false;
+
+    bool showInvoice = false;
+    Invoice selectedInvoice = null;
+
     private string _searchString;
 
     protected override async Task OnParametersSetAsync()
@@ -117,6 +122,21 @@
     {
         showInfoTab = false;
         showInvoicesTab = true;
+        StateHasChanged();
+    }
+
+    private void OnInvoiceClicked(Invoice invoice)
+    {
+        selectedInvoice = invoice;
+        showInvoice = true;
+        StateHasChanged();
+    }
+
+    private void OnInvoiceClosed()
+    {
+        showInvoice = false;
+        selectedInvoice = null;
+        
         StateHasChanged();
     }
 }
