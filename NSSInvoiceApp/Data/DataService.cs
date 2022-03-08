@@ -107,6 +107,7 @@ namespace NSSInvoiceApp.Data
         /// <returns></returns>
         public async static Task<string> ConvertInvoiceToPDF(Invoice invoice, List<InvoiceItem> invoiceItems, Customer customer, UserData userData)
         {
+            //Temporary template from Syncfusion's documentation. Will replace.
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 try
